@@ -17,7 +17,6 @@ class VnfIpSupervisor:
             'Postman-Token': "13ff72dd-8fe4-44cf-905d-e158b09ddb08"
             }
         return requests.request("GET", url, data=payload, headers=headers, verify=False)
-
     def get_current_ips(self):
         current_ips = []
         response = self.get_ip_request()        

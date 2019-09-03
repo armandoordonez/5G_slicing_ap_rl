@@ -45,10 +45,12 @@ def get_vnf_list(ns_id, auth_token):
 if __name__ == "__main__":
     auth_token = get_osm_authentication_token()
     ns_id_list = get_nsid_list(auth_token)
-    for ns in ns_id_list:
-        print(ns)
-   
-
+    vnf_per_ns = {}
+    for ns_id in ns_id_list:
+        print(ns_id)
+        vnf_per_ns[ns_id] =  get_vnf_list(ns_id, auth_token)
+    print(vnf_per_ns)
+    
     """
     osm_auth_token = get_osm_authentication_token()
     VnfIpSupervisor(osm_auth_token, )
