@@ -23,7 +23,6 @@ class VnfIpSupervisor:
         response_in_yaml = load(response.text)
         for element in response_in_yaml["vdur"]:
                 current_ips.append(element["interfaces"][0]["ip-address"])
-
         
         return current_ips
 

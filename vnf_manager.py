@@ -48,7 +48,7 @@ if __name__ == "__main__":
     vnf_per_ns = {}
     for ns_id in ns_id_list:
         print(ns_id)
-        vnf_per_ns[ns_id] =  get_vnf_list(ns_id, auth_token)
+        vnf_per_ns[ns_id] =  get_vnf_list(ns_id, auth_token).text
     print(vnf_per_ns)
     
     """
