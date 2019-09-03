@@ -32,6 +32,7 @@ def get_nsid_list(auth_token):
     return ns_list
 
 def get_vnf_list(ns_id, auth_token):
+    vnf_list = []
     url = "https://localhost:9999/osm/nslcm/v1/vnf_instances?nsr-id-ref="+ns_id
     payload = ""
     headers = {
@@ -39,8 +40,12 @@ def get_vnf_list(ns_id, auth_token):
         'Authorization': "Bearer "+auth_token,
         'cache-control': "no-cache",
         }
-    return requests.request("GET", url, data=payload, headers=headers, verify=False)
-
+    response_in_yaml =  load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
+    for vnf in response_in_yaml:
+        vnf_list.append(vnf["_id"])
+    
+    return vnf_list
+        
 
 if __name__ == "__main__":
     auth_token = get_osm_authentication_token()
@@ -48,8 +53,7 @@ if __name__ == "__main__":
     vnf_per_ns = {}
     for ns_id in ns_id_list:
         print(ns_id)
-        print(get_vnf_list(ns_id, auth_token).text)
-        vnf_per_ns[ns_id] =  get_vnf_list(ns_id, auth_token).text
+        vnf_per_ns[ns_id] =  get_vnf_list(ns_id, auth_token)
     print(vnf_per_ns)
     
     """
