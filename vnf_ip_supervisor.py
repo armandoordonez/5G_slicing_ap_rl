@@ -6,7 +6,7 @@ class VnfIpSupervisor:
     def __init__(self, auth_token, vnf_id, ns_id):
         self.auth_token = auth_token
         self.vnf_id  = vnf_id
-        self.ns_id
+        self.ns_id = ns_id
         self.check_ip_loop()
     def get_ip_request(self):
         url = "https://localhost:9999/osm/nslcm/v1/vnf_instances/"+self.vnf_id
