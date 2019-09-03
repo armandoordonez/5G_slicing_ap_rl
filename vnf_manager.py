@@ -17,7 +17,7 @@ def get_osm_authentication_token():
     return response_parsed[2].decode("utf-8")
 
 def get_ns_list():
-    url = "https://localhost:9999/osm/nslcm/v1/ns_instances
+    url = "https://localhost:9999/osm/nslcm/v1/ns_instances"
     payload = ""
     headers = {
         'Content-Type': "application/",
@@ -39,7 +39,7 @@ def get_vnf_list(ns_id):
 
 if __name__ == "__main__":
     print(get_ns_list())
-    
+
     """
     osm_auth_token = get_osm_authentication_token()
     VnfIpSupervisor(osm_auth_token, )
