@@ -58,6 +58,7 @@ if __name__ == "__main__":
     
     for ns, vnf_list in vnf_per_ns.items():
         for vnf_id in vnf_list:
+            print("instantiation with ns: {} vnf: {}".format(ns, vnf_id))
             VnfIpSupervisor(auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
             
     
