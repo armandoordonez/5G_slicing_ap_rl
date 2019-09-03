@@ -30,7 +30,7 @@ class VnfIpSupervisor:
     def check_ip_loop(self):
         while True:
             time.sleep(1)
-            print("ns: {}..., vnf: {}..., current_ips:".format{self.vnf_id[:10], self.ns_id[:10]})
+            print("ns: {}..., vnf: {}..., current_ips:".format(self.vnf_id[:10], self.ns_id[:10]))
             print(*self.get_current_ips(),sep=",")
 
     
