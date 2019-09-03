@@ -45,7 +45,7 @@ def get_vnf_list(ns_id, auth_token):
 if __name__ == "__main__":
     auth_token = get_osm_authentication_token()
     ns_id_list = get_nsid_list(auth_token)
-    for ns in ns_list:
+    for ns in ns_id_list:
         print(ns)
    
 
