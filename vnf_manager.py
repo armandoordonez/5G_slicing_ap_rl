@@ -27,7 +27,7 @@ def get_nsid_list(auth_token):
         'cache-control': "no-cache",
         }
     response_in_yaml = load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
-    for ns in response_in_yaml["_admin"]:
+    for ns in response_in_yaml:
         ns_list.append(ns["id"])
     return ns_list
 
