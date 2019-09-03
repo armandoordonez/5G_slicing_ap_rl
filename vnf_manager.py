@@ -2,6 +2,7 @@ import vnf_controller as vnf_controller
 from vnf_ip_supervisor import VnfIpSupervisor
 import vnf_monitor as vnf_monitor
 import requests
+from yaml import load
 
 def get_osm_authentication_token():
     url = "https://localhost:9999/osm/admin/v1/tokens"
@@ -16,7 +17,8 @@ def get_osm_authentication_token():
     response_parsed = response.content.split()
     return response_parsed[2].decode("utf-8")
 
-def get_ns_list(auth_token):
+def get_nsid_list(auth_token):
+    ns_list = []
     url = "https://localhost:9999/osm/nslcm/v1/ns_instances"
     payload = ""
     headers = {
@@ -24,7 +26,10 @@ def get_ns_list(auth_token):
         'Authorization': "Bearer "+ auth_token,
         'cache-control': "no-cache",
         }
-    return requests.request("GET", url, data=payload, headers=headers, verify=False)
+    response_in_yaml = load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
+    for ns in response_in_yaml[_admin]:
+        ns_list.append(ns["id"])
+    return ns_list
 
 def get_vnf_list(ns_id, auth_token):
     url = "https://localhost:9999/osm/nslcm/v1/vnf_instances?nsr-id-ref="+ns_id
@@ -39,7 +44,10 @@ def get_vnf_list(ns_id, auth_token):
 
 if __name__ == "__main__":
     auth_token = get_osm_authentication_token()
-    print(get_ns_list(auth_token).text)
+    ns_id_list = get_nsid_list()
+    for ns in ns_list:
+        print(ns)
+   
 
     """
     osm_auth_token = get_osm_authentication_token()
