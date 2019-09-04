@@ -33,6 +33,7 @@ class VnfManager(Observer):
                 subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
                 subject.attach(self)
                 vnf_ip_supervisor[vnf_id] = subject # two times bug.
+                
                 vnf_ip_loop.append(subject.check_ip_loop())
                 
 
