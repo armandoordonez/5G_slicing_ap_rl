@@ -32,13 +32,12 @@ class VnfManager(Observer):
                 #Todo put this above in a thread
                 subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
                 subject.attach(self)
-                vnf_ip_supervisor[vnf_id] = subject # two times bug.
-                
+                vnf_ip_supervisor[vnf_id] = subject # two times bug.                
                 vnf_ip_loop.append(subject.check_ip_loop())
                 
 
         print("total vnf attached: {} ".format(len(vnf_ip_supervisor)))
-        loop.run_until_complete(asyncio.gather(*vnf_ip_loop))
+        loop.run_until_complete(asyncio.gather(*vnf_ip_loop)) # possible bug two times
         print("brrrr")
             
 
