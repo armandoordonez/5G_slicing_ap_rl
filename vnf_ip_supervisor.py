@@ -5,7 +5,7 @@ import asyncio
 from ObserverPattern.vnf_observer_pattern import VnfIpSubject  as IpSubject
 class VnfIpSupervisor(IpSubject):
     _current_ips: [] = None
-    
+    _current_cpu_load = None 
     _observers = None
     def __init__(self, base_url,  auth_token, vnf_id, ns_id):
         self.auth_token = auth_token
@@ -27,7 +27,8 @@ class VnfIpSupervisor(IpSubject):
     def get_current_ips(self):
         current_ips = []
         response = self.get_ip_request()        
-        response_in_yaml = load(response.text)
+        response_in_yaml = load(response.text)  # todo get ips from another source different of "vdur" 
+        #print(response_in_yaml)
         for element in response_in_yaml["vdur"]:
                 current_ips.append(element["interfaces"][0]["ip-address"])
                      

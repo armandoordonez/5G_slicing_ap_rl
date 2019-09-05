@@ -12,17 +12,14 @@ class VnfManager(Observer):
     def __init__(self, base_url):
         self.start(base_url)
         
+
     def start(self, base_url):
         auth_token = self.get_osm_authentication_token(base_url = base_url)
         ns_id_list = self.get_nsid_list(base_url = base_url, auth_token = auth_token)
-        loop = asyncio.get_event_loop()
-        
-        
-        vnf_per_ns = {}
-        
+        loop = asyncio.get_event_loop()               
+        vnf_per_ns = {}        
         for ns_id in ns_id_list:
             vnf_per_ns[ns_id] =  self.get_vnf_list(base_url, ns_id, auth_token)
-        
         print(auth_token)
         vnf_ip_supervisor: {string, VnfIpSupervisor} = {}
         vnf_ip_loop = []
@@ -33,12 +30,15 @@ class VnfManager(Observer):
                 subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
                 subject.attach(self)
                 vnf_ip_supervisor[vnf_id] = subject # two times bug.                
-                vnf_ip_loop.append(subject.check_ip_loop())
+                asyncio.ensure_future(subject.check_ip_loop())
+                #vnf_ip_loop.append(subject.check_ip_loop())
                 
 
         print("total vnf attached: {} ".format(len(vnf_ip_supervisor)))
-        loop.run_until_complete(asyncio.gather(*vnf_ip_loop)) # possible bug two times
+        #loop.run_until_complete(asyncio.gather(*vnf_ip_loop)) # possible bug two times
         print("brrrr")
+        pending = asyncio.Task.all_tasks() #allow end the last task!
+        loop.run_until_complete(asyncio.gather(*pending))
             
 
 
@@ -60,14 +60,18 @@ class VnfManager(Observer):
         ns_list = []
         url = base_url + "nslcm/v1/ns_instances"
         payload = ""
+        print(url)
         headers = {
             'Content-Type': "application/",
             'Authorization': "Bearer "+ auth_token,
             'cache-control': "no-cache",
             }
+        # print(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
+        
         response_in_yaml = load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
         for ns in response_in_yaml:
-            ns_list.append(ns["id"])
+            print(ns["name"])
+            ns_list.append(ns["id"])        
         return ns_list
 
     def get_vnf_list(self, base_url, ns_id, auth_token):
