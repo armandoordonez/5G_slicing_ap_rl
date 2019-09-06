@@ -14,39 +14,28 @@ class VnfManager(Observer):
         
 
     def start(self, base_url):
+        cadvisor_url  = base_url.replace("https","http") + ":8080/api/"
+        base_url = base_url+":9999/osm/" #osm nbi api.
         auth_token = self.get_osm_authentication_token(base_url = base_url)
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url = base_url, auth_token = auth_token)
-        loop = asyncio.get_event_loop()    
-    s
-
-        """           
-        vnf_per_ns = {}       
-        
-        for ns_id in ns_id_list:
-            vnf_per_ns[ns_id] =  self.get_vnf_list(base_url, ns_id, auth_token)
-       
-        
-        print(auth_token)
-        vnf_ip_supervisor: {string, VnfIpSupervisor} = {}
-        vnf_ip_loop = []
-        for ns, vnf_list in vnf_per_ns.items():
-            for vnf_id in vnf_list:
-                print("instantiation with ns: {} vnf: {}".format(ns, vnf_id))
-                #Todo put this above in a thread
-                subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
-                subject.attach(self)
-                vnf_ip_supervisor[vnf_id] = subject # two times bug.                
-                asyncio.ensure_future(subject.check_ip_loop())
-                #vnf_ip_loop.append(subject.check_ip_loop())
+        loop = asyncio.get_event_loop()   
+        vnf_supervisor_instances = {}
+        for key, ns in ns_vnf_list.items():
+            for vnf in ns["vnf"]:
+                print(ns["name"])
+                print(ns["vnf"][vnf])
+                vnf_supervisor_instance = VnfIpSupervisor(cadvisor_url = cadvisor_url, base_url = base_url, auth_token = auth_token, vnf_id = ns["vnf"][vnf], ns_id = key, ns_name = ns["name"], member_index = vnf)
                 
-
-        print("total vnf attached: {} ".format(len(vnf_ip_supervisor)))
-        #loop.run_until_complete(asyncio.gather(*vnf_ip_loop)) # possible bug two times
-        print("brrrr")
+                vnf_supervisor_instance.attach(self)                
+                asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
+                vnf_supervisor_instances[ns["vnf"][vnf]] = vnf_supervisor_instance
+            
         pending = asyncio.Task.all_tasks() #allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
-        """
-
+        for indx, instance in vnf_supervisor_instances.items():
+            
+            print("docker_id: {} vnf_id: {} docker_name:{}".format(instance.docker_id, instance.vnf_id, instance.docker_name))
+        
 
 
     def get_osm_authentication_token(self, base_url):
@@ -62,6 +51,7 @@ class VnfManager(Observer):
 
     def get_nsid_list(self, base_url, auth_token):
         ns_list = []
+        ns_vnf_dict = {}
         url = base_url + "nslcm/v1/ns_instances"
         payload = ""
         print(url)
@@ -70,38 +60,29 @@ class VnfManager(Observer):
             'Authorization': "Bearer "+ auth_token,
             'cache-control': "no-cache",
             }
-        # print(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
-        
         response_in_yaml = load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
         for ns in response_in_yaml:
-            print(ns["name"])
-            ns_list.append(ns["id"])        
-        return ns_list
+            #print(ns["name"])
+            ns_list.append(ns["id"])       
+            internal_dict = {} 
+            internal_dict["name"] = ns["name"]
+            vnf_data = {}
+            for index, vnf_list in enumerate(ns["constituent-vnfr-ref"]):
+                #print(vnf_list)
+                vnf_data[index] = vnf_list
+            internal_dict["vnf"] = vnf_data
+            ns_vnf_dict[ns["id"]] = internal_dict 
+        return ns_list, ns_vnf_dict
 
-    def get_vnf_list(self, base_url, ns_id, auth_token):
-        vnf_list = []
-        url = base_url + "nslcm/v1/vnf_instances?nsr-id-ref="+ns_id
-        payload = ""
-        headers = {
-            'Content-Type': "application/",
-            'Authorization': "Bearer "+auth_token,
-            'cache-control': "no-cache",
-            }
-        response_in_yaml =  load(requests.request("GET", url, data=payload, headers=headers, verify=False).text)
-        for vnf in response_in_yaml:
-            vnf_list.append(vnf["_id"])
-        
-        return vnf_list
-    
-            
     def updateIpSubject(self, subject: IpSubject) -> None:
-        print("reacted from ip {}, number of vnfs: {}, ips: {}".format(subject._current_ips, len(subject._current_ips), subject.vnf_id))
+        print("reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(subject.docker_name, subject.cpu_load, subject.ns_name))
         
 if __name__ == "__main__":    
     parser = argparse.ArgumentParser(description="Arguments to work with")
     parser.add_argument('--dst_ip',default="localhost",help='destination ip')
     args = parser.parse_args()
-    base_url = "https://"+args.dst_ip+":9999/osm/"
-    print("base_url: {}".format(base_url))
+    main_url = "https://"+args.dst_ip
+    #base_url = "https://"+args.dst_ip+":9999/osm/"
+    print("base_url: {}".format(main_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    VnfManager(base_url = base_url)
+    VnfManager(base_url = main_url)

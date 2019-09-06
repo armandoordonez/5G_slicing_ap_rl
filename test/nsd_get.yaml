@@ -1,0 +1,260 @@
+-   sel: 1
+    _admin:
+        created: 1567694380.2328715
+        deployed:
+            RO:
+                nsd_id: 56869a18-bbbe-4d19-a7d9-2b1f8c572eae
+                nsr_id: aaeb7c42-fcc8-4868-b85b-78373e29541b
+                nsr_status: ACTIVE
+                vnfd:
+                -   id: 08b925e4-9ec6-46ac-9b47-0c83187b81fe
+                    member-vnf-index: '1'
+                -   id: d7bd110b-1a5c-43dc-8846-85671175a98a
+                    member-vnf-index: '2'
+            VCA: []
+        modified: 1567694380.2328715
+        nsState: INSTANTIATED
+        nslcmop: null
+        projects_read:
+        - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+        projects_write:
+        - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+    _id: 80664a61-4105-49ef-a3e8-23c8ab4b2fda
+    additionalParamsForNs: null
+    admin-status: ENABLED
+    config-status: configured
+    constituent-vnfr-ref:
+    - 833306a5-411f-4d4a-bb80-d271cbdf71ff
+    - 2915520a-66da-4919-827d-344fffcd172f
+    create-time: 1567694380.2265463
+    datacenter: b2638b8b-17c1-4b2b-b89c-a4e3e5629317
+    description: brrrr
+    detailed-status: done
+    id: 80664a61-4105-49ef-a3e8-23c8ab4b2fda
+    instantiate_params:
+        nsDescription: brrrr
+        nsName: anuel
+        nsdId: 9807bf61-5211-4892-b356-0cd11de3a468
+        ssh_keys: []
+        vimAccountId: b2638b8b-17c1-4b2b-b89c-a4e3e5629317
+    name: anuel
+    name-ref: anuel
+    ns-instance-config-ref: 80664a61-4105-49ef-a3e8-23c8ab4b2fda
+    nsd:
+        _admin:
+            created: 1567026278.5127368
+            modified: 1567026278.5127368
+            onboardingState: ONBOARDED
+            operationalState: ENABLED
+            projects_read:
+            - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+            projects_write:
+            - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+            storage:
+                descriptor: slice_hackfest_nsd/slice_hackfest_nsd.yaml
+                folder: 9807bf61-5211-4892-b356-0cd11de3a468
+                fs: local
+                path: /app/storage/
+                pkg-dir: slice_hackfest_nsd
+                zipfile: package.tar.gz
+            usageState: NOT_IN_USE
+            userDefinedData: {}
+        _id: 9807bf61-5211-4892-b356-0cd11de3a468
+        connection-point:
+        -   name: nsd_cp_mgmt
+            vld-id-ref: nsd_vnfd_vld_mgmt
+        -   name: nsd_cp_data
+            vld-id-ref: nsd_vnfd_vld_data
+        constituent-vnfd:
+        -   member-vnf-index: '1'
+            vnfd-id-ref: slice_hackfest_vnfd
+        -   member-vnf-index: '2'
+            vnfd-id-ref: slice_hackfest_vnfd
+        description: NetServiceDescriptor with 2 vnfs and 2 vld (mgmt and data networks)
+        id: slice_hackfest_nsd
+        logo: osm_2x.png
+        name: slice_hackfest_nsd
+        short-name: slice_hackfest_ns
+        vendor: OSM
+        version: '1.0'
+        vld:
+        -   id: nsd_vnfd_vld_mgmt
+            mgmt-network: true
+            name: nsd_vnfd_vld_mgmt
+            short-name: nsd_vnfd_vld_mgmt
+            type: ELAN
+            vim-network-name: default
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: '1'
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: slice_hackfest_vnfd
+            -   member-vnf-index-ref: '2'
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: slice_hackfest_vnfd
+        -   id: nsd_vnfd_vld_data
+            mgmt-network: false
+            name: nsd_vnfd_vld_data
+            short-name: nsd_vnfd_vld_data
+            type: ELAN
+            vim-network-name: default
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: '1'
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: slice_hackfest_vnfd
+            -   member-vnf-index-ref: '2'
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: slice_hackfest_vnfd
+    nsd-id: 9807bf61-5211-4892-b356-0cd11de3a468
+    nsd-name-ref: slice_hackfest_nsd
+    nsd-ref: slice_hackfest_nsd
+    operational-events: []
+    operational-status: running
+    orchestration-progress: {}
+    resource-orchestrator: osmopenmano
+    short-name: anuel
+    ssh-authorized-key: []
+    vld:
+    -   id: nsd_vnfd_vld_mgmt
+        name: null
+        status: ACTIVE
+        status-detailed: null
+        vim-id: 1cd43781-29ac-49c7-a5fd-1889413f8031
+        vim-network-name: default
+    -   id: nsd_vnfd_vld_data
+        name: null
+        status: ACTIVE
+        status-detailed: null
+        vim-id: 1cd43781-29ac-49c7-a5fd-1889413f8031
+        vim-network-name: default
+    vnfd-id:
+    - ab57af4f-1851-48ab-8ab9-1798b25d4f22
+-   _admin:
+        created: 1567694410.1592243
+        deployed:
+            RO:
+                nsd_id: 73a7d0f2-80f7-42ab-9fbe-8279c08e0ab7
+                nsr_id: abe018d7-30cc-4c0b-b993-093ccdc1d546
+                nsr_status: ACTIVE
+                vnfd:
+                -   id: 871ec08a-701d-48cb-a4a4-6dd179185ee8
+                    member-vnf-index: '1'
+                -   id: 14f0f0ef-73f2-453e-88b9-86244d9ed8fd
+                    member-vnf-index: '2'
+            VCA: []
+        modified: 1567694410.1592243
+        nsState: INSTANTIATED
+        nslcmop: null
+        projects_read:
+        - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+        projects_write:
+        - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+    _id: 6e1a0c7e-94b9-411a-8854-3560b2d1c053
+    additionalParamsForNs: null
+    admin-status: ENABLED
+    config-status: configured
+    constituent-vnfr-ref:
+    - 8254cef8-633e-4fc4-81aa-d526f99ac171
+    - 85f36477-9ae8-4233-9d25-7dabb666866e
+    create-time: 1567694410.1558516
+    datacenter: b2638b8b-17c1-4b2b-b89c-a4e3e5629317
+    description: claro
+    detailed-status: done
+    id: 6e1a0c7e-94b9-411a-8854-3560b2d1c053
+    instantiate_params:
+        nsDescription: claro
+        nsName: ozuna
+        nsdId: 9807bf61-5211-4892-b356-0cd11de3a468
+        ssh_keys: []
+        vimAccountId: b2638b8b-17c1-4b2b-b89c-a4e3e5629317
+    name: ozuna
+    name-ref: ozuna
+    ns-instance-config-ref: 6e1a0c7e-94b9-411a-8854-3560b2d1c053
+    nsd:
+        _admin:
+            created: 1567026278.5127368
+            modified: 1567026278.5127368
+            onboardingState: ONBOARDED
+            operationalState: ENABLED
+            projects_read:
+            - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+            projects_write:
+            - c5eafcc1-68b9-40a9-a12d-2e4219ce4556
+            storage:
+                descriptor: slice_hackfest_nsd/slice_hackfest_nsd.yaml
+                folder: 9807bf61-5211-4892-b356-0cd11de3a468
+                fs: local
+                path: /app/storage/
+                pkg-dir: slice_hackfest_nsd
+                zipfile: package.tar.gz
+            usageState: NOT_IN_USE
+            userDefinedData: {}
+        _id: 9807bf61-5211-4892-b356-0cd11de3a468
+        connection-point:
+        -   name: nsd_cp_mgmt
+            vld-id-ref: nsd_vnfd_vld_mgmt
+        -   name: nsd_cp_data
+            vld-id-ref: nsd_vnfd_vld_data
+        constituent-vnfd:
+        -   member-vnf-index: '1'
+            vnfd-id-ref: slice_hackfest_vnfd
+        -   member-vnf-index: '2'
+            vnfd-id-ref: slice_hackfest_vnfd
+        description: NetServiceDescriptor with 2 vnfs and 2 vld (mgmt and data networks)
+        id: slice_hackfest_nsd
+        logo: osm_2x.png
+        name: slice_hackfest_nsd
+        short-name: slice_hackfest_ns
+        vendor: OSM
+        version: '1.0'
+        vld:
+        -   id: nsd_vnfd_vld_mgmt
+            mgmt-network: true
+            name: nsd_vnfd_vld_mgmt
+            short-name: nsd_vnfd_vld_mgmt
+            type: ELAN
+            vim-network-name: default
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: '1'
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: slice_hackfest_vnfd
+            -   member-vnf-index-ref: '2'
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: slice_hackfest_vnfd
+        -   id: nsd_vnfd_vld_data
+            mgmt-network: false
+            name: nsd_vnfd_vld_data
+            short-name: nsd_vnfd_vld_data
+            type: ELAN
+            vim-network-name: default
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: '1'
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: slice_hackfest_vnfd
+            -   member-vnf-index-ref: '2'
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: slice_hackfest_vnfd
+    nsd-id: 9807bf61-5211-4892-b356-0cd11de3a468
+    nsd-name-ref: slice_hackfest_nsd
+    nsd-ref: slice_hackfest_nsd
+    operational-events: []
+    operational-status: running
+    orchestration-progress: {}
+    resource-orchestrator: osmopenmano
+    short-name: ozuna
+    ssh-authorized-key: []
+    vld:
+    -   id: nsd_vnfd_vld_mgmt
+        name: null
+        status: ACTIVE
+        status-detailed: null
+        vim-id: 1cd43781-29ac-49c7-a5fd-1889413f8031
+        vim-network-name: default
+    -   id: nsd_vnfd_vld_data
+        name: null
+        status: ACTIVE
+        status-detailed: null
+        vim-id: 1cd43781-29ac-49c7-a5fd-1889413f8031
+        vim-network-name: default
+    vnfd-id:
+    - ab57af4f-1851-48ab-8ab9-1798b25d4f22
+

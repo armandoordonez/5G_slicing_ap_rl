@@ -28,9 +28,10 @@ class VnfManager(Observer):
                 print("instantiation with ns: {} vnf: {}".format(ns, vnf_id))
                 #Todo put this above in a thread
                 subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
+                break
                 subject.attach(self)
                 vnf_ip_supervisor[vnf_id] = subject # two times bug.                
-                asyncio.ensure_future(subject.check_ip_loop())
+                #asyncio.ensure_future(subject.check_ip_loop())
                 #vnf_ip_loop.append(subject.check_ip_loop())
                 
 
@@ -50,9 +51,7 @@ class VnfManager(Observer):
             'content-type': "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
             'cache-control': "no-cache",
             }
-
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
-
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
 
@@ -97,7 +96,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Arguments to work with")
     parser.add_argument('--dst_ip',default="localhost",help='destination ip')
     args = parser.parse_args()
-    base_url = "https://"+args.dst_ip+":9999/osm/"
+    base_url = "http://"+args.dst_ip+":9999/osm/"
     print("base_url: {}".format(base_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     VnfManager(base_url = base_url)
