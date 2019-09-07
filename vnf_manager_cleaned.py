@@ -1,13 +1,14 @@
 import vnf_controller as vnf_controller
-from vnf_ip_supervisor import VnfIpSupervisor
+from vnf_ip_supervisor import VnfCpuSupervisor
 import vnf_monitor as vnf_monitor
 import requests
 from yaml import load
 import argparse
 import urllib3
 from ObserverPattern.vnf_observer_pattern import VnfObserver as Observer
-from ObserverPattern.vnf_observer_pattern import VnfIpSubject as IpSubject
+from ObserverPattern.vnf_observer_pattern import VnfCpuSubject as CpuSubject
 import asyncio
+
 class VnfManager(Observer): 
     def __init__(self, base_url):
         self.start(base_url)
@@ -24,7 +25,7 @@ class VnfManager(Observer):
             for vnf in ns["vnf"]:
                 print(ns["name"])
                 print(ns["vnf"][vnf])
-                vnf_supervisor_instance = VnfIpSupervisor(cadvisor_url = cadvisor_url, base_url = base_url, auth_token = auth_token, vnf_id = ns["vnf"][vnf], ns_id = key, ns_name = ns["name"], member_index = vnf)
+                vnf_supervisor_instance = VnfCpuSupervisor(cadvisor_url = cadvisor_url, base_url = base_url, auth_token = auth_token, vnf_id = ns["vnf"][vnf], ns_id = key, ns_name = ns["name"], member_index = vnf)
                 
                 vnf_supervisor_instance.attach(self)                
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
@@ -33,7 +34,6 @@ class VnfManager(Observer):
         pending = asyncio.Task.all_tasks() #allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
-            
             print("docker_id: {} vnf_id: {} docker_name:{}".format(instance.docker_id, instance.vnf_id, instance.docker_name))
         
 
@@ -74,15 +74,16 @@ class VnfManager(Observer):
             ns_vnf_dict[ns["id"]] = internal_dict 
         return ns_list, ns_vnf_dict
 
-    def updateIpSubject(self, subject: IpSubject) -> None:
+    def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
         print("reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(subject.docker_name, subject.cpu_load, subject.ns_name))
-        
+    def notify_to_decision_module(self, parameter_list):
+
+        pass
 if __name__ == "__main__":    
     parser = argparse.ArgumentParser(description="Arguments to work with")
     parser.add_argument('--dst_ip',default="localhost",help='destination ip')
     args = parser.parse_args()
     main_url = "https://"+args.dst_ip
-    #base_url = "https://"+args.dst_ip+":9999/osm/"
     print("base_url: {}".format(main_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     VnfManager(base_url = main_url)

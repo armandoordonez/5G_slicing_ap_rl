@@ -1,12 +1,12 @@
 import vnf_controller as vnf_controller
-from vnf_ip_supervisor import VnfIpSupervisor
+from vnf_ip_supervisor import VnfCpuSupervisor
 import vnf_monitor as vnf_monitor
 import requests
 from yaml import load
 import argparse
 import urllib3
 from ObserverPattern.vnf_observer_pattern import VnfObserver as Observer
-from ObserverPattern.vnf_observer_pattern import VnfIpSubject as IpSubject
+from ObserverPattern.vnf_observer_pattern import VnfCpuSubject as CpuSubject
 import asyncio
 class VnfManager(Observer): 
     def __init__(self, base_url):
@@ -21,13 +21,13 @@ class VnfManager(Observer):
         for ns_id in ns_id_list:
             vnf_per_ns[ns_id] =  self.get_vnf_list(base_url, ns_id, auth_token)
         print(auth_token)
-        vnf_ip_supervisor: {string, VnfIpSupervisor} = {}
+        vnf_ip_supervisor: {string, VnfCpuSupervisor} = {}
         vnf_ip_loop = []
         for ns, vnf_list in vnf_per_ns.items():
             for vnf_id in vnf_list:
                 print("instantiation with ns: {} vnf: {}".format(ns, vnf_id))
                 #Todo put this above in a thread
-                subject = VnfIpSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
+                subject = VnfCpuSupervisor(base_url = base_url, auth_token = auth_token, vnf_id = vnf_id, ns_id = ns)
                 break
                 subject.attach(self)
                 vnf_ip_supervisor[vnf_id] = subject # two times bug.                
@@ -89,7 +89,7 @@ class VnfManager(Observer):
         return vnf_list
     
             
-    def updateIpSubject(self, subject: IpSubject) -> None:
+    def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
         print("reacted from ip {}, number of vnfs: {}, ips: {}".format(subject._current_ips, len(subject._current_ips), subject.vnf_id))
         
 if __name__ == "__main__":    

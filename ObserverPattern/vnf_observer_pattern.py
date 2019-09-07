@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 
-class VnfIpSubject(ABC):
+class VnfCpuSubject(ABC):
 
     @abstractmethod
     def attach (self, observer) -> None:
@@ -18,5 +18,5 @@ class VnfIpSubject(ABC):
 
 class VnfObserver(ABC):
     @abstractmethod
-    def updateIpSubject(self, subject: VnfIpSubject) -> None:
+    def updateCpuUsageSubject(self, subject: VnfCpuSubject) -> None:
         pass

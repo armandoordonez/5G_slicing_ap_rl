@@ -2,8 +2,8 @@ import requests
 import time
 from yaml import load, dump
 import asyncio
-from ObserverPattern.vnf_observer_pattern import VnfIpSubject  as IpSubject
-class VnfIpSupervisor(IpSubject):
+from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
+class VnfCpuSupervisor(CpuSubject):
     _current_ips: [] = None
     _current_cpu_load = None 
     _observers = None
@@ -58,4 +58,4 @@ class VnfIpSupervisor(IpSubject):
     def notify(self) -> None: 
         #print("total observers {}, notifying observers...".format(len(self._observers)))
         print("notifying....")
-        self._observers.updateIpSubject(self)
+        self._observers.updateCpuUsageSubject(self)
