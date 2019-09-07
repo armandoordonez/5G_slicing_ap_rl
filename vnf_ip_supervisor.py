@@ -22,11 +22,12 @@ class VnfCpuSupervisor(CpuSubject):
         self.cpu_load = None
         
                 
-
+    #todo: sistema no funciona si no hay dockers containers corriendo 
     def get_docker_id(self):
         r = requests.get(self.cadvisor_url)
-        
+        print(self.cadvisor_url)
         parsed_json = r.json()
+
         for container in parsed_json:
             try:            
                 for alias in container["aliases"]:
@@ -35,11 +36,12 @@ class VnfCpuSupervisor(CpuSubject):
                         if self.extract_vnf_number(container["aliases"][0]) is self.member_index:
                             self.docker_id = container["aliases"][1]
                             self.docker_name  = container["aliases"][0]
-                            #print(self.docker_id)
+                            print(container["aliases"])
                         #todo implement mapping between docker_id, docker_name, vnfd, ns
             except KeyError as e:
+                
                 pass
-                #print("catch error:{}".format(e))
+                print("catch error:{}".format(e))
         
         del parsed_json
         return self.docker_id, self.docker_name
@@ -64,7 +66,7 @@ class VnfCpuSupervisor(CpuSubject):
                 self.cpu_load = self.get_current_cpu_usage()            
                 counter += 1 
                 if self.cpu_load > 50:
-                    self.notify()
+                    await self.notify()
            
     def get_current_cpu_usage(self):
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_id)
@@ -85,7 +87,7 @@ class VnfCpuSupervisor(CpuSubject):
         self._observers = None
     
     
-    def notify(self) -> None: 
+    async def notify(self) -> None: 
         #print("total observers {}, notifying observers...".format(len(self._observers)))
         print("notifying....")
-        self._observers.updateCpuUsageSubject(self)
+        await self._observers.updateCpuUsageSubject(self)
