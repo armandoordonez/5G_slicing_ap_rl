@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from ObserverPattern.vnf_obs import VnfObserver as Observer
 
-class VnfIpSubject(ABC):
+class VnfCpuSubject(ABC):
 
     @abstractmethod
     def attach (self, observer: Observer) -> None:

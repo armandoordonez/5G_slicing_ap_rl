@@ -7,8 +7,7 @@ class vnf_manager_prototype(object):
             asyncio.ensure_future(self.underground_func(character))
         asyncio.ensure_future(websockets.serve(self.hello, "localhost", 8765))
         pending = asyncio.Task.all_tasks() #allow end the last task!
-        print(len(pending))
-    
+        print(len(pending))    
         loop.run_until_complete(asyncio.gather(*pending))
         loop.run_forever()
 

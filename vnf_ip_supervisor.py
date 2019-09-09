@@ -16,8 +16,8 @@ class VnfCpuSupervisor(CpuSubject):
         self.base_url = base_url        
         self.member_index = member_index + 1 
         self.cadvisor_url_cpu = cadvisor_url + "v2.0/ps/docker"
-
-        self.cadvisor_url = cadvisor_url +"v1.3/subcontainers/docker"
+        self.sampling_time_sec = 5 
+        self.cadvisor_url = cadvisor_url + "v1.3/subcontainers/docker"
         self.docker_id, self.docker_name = self.get_docker_id()
         self.cpu_load = None
         
@@ -27,16 +27,16 @@ class VnfCpuSupervisor(CpuSubject):
         r = requests.get(self.cadvisor_url)
         print(self.cadvisor_url)
         parsed_json = r.json()
-
         for container in parsed_json:
             try:            
                 for alias in container["aliases"]:
                     if self.ns_name in alias :
                        
-                        if self.extract_vnf_number(container["aliases"][0]) is self.member_index:
+                        if self.extract_vnf_number(container["aliases"][0]) is self.member_index and (container["aliases"][0][-1:] is "1"):
                             self.docker_id = container["aliases"][1]
                             self.docker_name  = container["aliases"][0]
                             print(container["aliases"])
+                            print(container["aliases"][0][-1:])
                         #todo implement mapping between docker_id, docker_name, vnfd, ns
             except KeyError as e:
                 
@@ -56,15 +56,12 @@ class VnfCpuSupervisor(CpuSubject):
                     number = number + docker_container_name[indx]
         return int(number)
     async def check_ip_loop(self):
-        #this loop inside and when the counter be divisible by 5 it shoot out to the manager....
-        counter = 0
-        print("ciploop..")
+        print("check cpu loop..{}".format(self.docker_id))
         while True:
             if  self.docker_id is not None: 
-                await asyncio.sleep(1)           
+                await asyncio.sleep(self.sampling_time_sec)           
                 #self._current_ips = self.get_current_ips()            
                 self.cpu_load = self.get_current_cpu_usage()            
-                counter += 1 
                 if self.cpu_load > 50:
                     await self.notify()
            

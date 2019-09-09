@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from ObserverPattern.vnf_ip_subject import VnfIpSubject as IpSubject
+from ObserverPattern.vnf_ip_subject import VnfCpuSubject as CpuSubject
 
 class VnfObserver(ABC):
     @abstractmethod
-    def updateIpSubject(self, subject: IpSubject) -> None:
+    def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
         pass
