@@ -118,7 +118,7 @@ class VnfManager(Observer):
     def copy_cfg_to_loadbalancer(self):
         copy_command = "docker cp haproxy.cfg {}:/usr/local/etc/haproxy/haproxy.cfg".format(self.load_balancer_docker_id)
         print(copy_command)
-        os.system(copy_command) #
+        os.system(copy_command) # [R]
 
     def update_loadbalancer_cfg(self, vnf_id, vnf_ips):
         with open( self.haproxy_cfg_name, "a") as myfile:
