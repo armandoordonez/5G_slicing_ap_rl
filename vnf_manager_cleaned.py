@@ -16,8 +16,10 @@ import os
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip):
         self.TAG = "VnfManager"
-        self.load_balancer_docker_id = ""
+        self.load_balancer_docker_id = "haproxy"
+        self.haproxy_cfg_name = "haproxy.cfg"
         print(self.TAG,"init")
+        print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name))
         self.start(base_url, sdm_ip)
     def print(self, TAG, string):
         print("class: {}, {}".format(TAG, string))
@@ -119,7 +121,7 @@ class VnfManager(Observer):
         os.system(copy_command)
 
     def update_loadbalancer_cfg(self, vnf_ips):
-        with open("example.cfg", "a") as myfile:
+        with open( self.haproxy_cfg_name, "a") as myfile:
             count = 0 
             # todo extract ips from array.
             print(vnf_ips)
