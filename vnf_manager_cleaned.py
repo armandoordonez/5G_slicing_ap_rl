@@ -105,7 +105,7 @@ class VnfManager(Observer):
         only_vnf_ips = []
         for ips in vnf_ips.values():
             only_vnf_ips = ips
-        self.update_loadbalancer_cfg(only_vnf_ips)
+        self.update_loadbalancer_cfg(vnf_id, only_vnf_ips)
         self.copy_cfg_to_loadbalancer()
         self.restart_loadbalancer()
         return vnf_ips
@@ -120,14 +120,14 @@ class VnfManager(Observer):
         print(copy_command)
         os.system(copy_command)
 
-    def update_loadbalancer_cfg(self, vnf_ips):
+    def update_loadbalancer_cfg(self, vnf_id, vnf_ips):
         with open( self.haproxy_cfg_name, "a") as myfile:
             count = 0 
             # todo extract ips from array.
             print(vnf_ips)
             for ip in vnf_ips:
                 print(ip)
-                server_name = "my_server_" + str(count)
+                server_name = "my_server_" + str(vnf_id[:4])
                 parsed_ips = "    server {} {}:{} \n".format(server_name, ip, "7079")
                 print(parsed_ips)
                 myfile.write(parsed_ips)
