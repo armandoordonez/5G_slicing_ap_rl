@@ -21,21 +21,3 @@ class VnfScaleModule():
         }        
         response =  requests.request("POST", url, data=payload, headers=headers, verify=False)
         print(response.text)
-
-
-
-        
-
-
-
-"""
-url =  "https://34.67.193.200/admin/v1/tokens"
-payload = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\nadmin\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\nadmin\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--"
-headers = {
-    'content-type': "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
-    'cache-control': "no-cache",
-}
-response = requests.request("POST", url, data=payload, headers=headers, verify=False)
-response_parsed = response.content.split()
-print(response_parsed)
-"""

@@ -1,0 +1,44 @@
+1. se instala vlc en el contenedor docker donde se quiera el servicio
+
+sudo apt-get install vlc
+curl
+
+2. se debe crear un usuario ya que vlc no corre desde root
+
+useradd -ms /bin/bash <newuser>
+
+su - <newuser>
+
+3. se introduce el comando para el streaming de video
+
+unset DISPLAY; vlc-wrapper -vvv /path/to/file.mp4 --sout '#standard{access=http,mux=asf,dst=0.0.0.0:8080}'
+
+#el archivo mp4 debe ser formato estandar mux asf codif H.264 (preferiblemente)
+
+4. si no se tiene un cliente con display se recibe con curl o wget
+
+
+
+1. se instala vlc en el contenedor docker donde se quiera el servicio
+
+sudo apt-get install vlc
+
+2. se debe crear un usuario ya que vlc no corre desde root
+
+useradd -ms /bin/bash <newuser>
+
+su - <newuser>
+
+3. se introduce el comando para el streaming de video
+
+unset DISPLAY; vlc-wrapper -vvv /path/to/file.mp4 --sout '#standard{access=http,mux=asf,dst=0.0.0.0:8080}' -L
+
+#el archivo mp4 debe ser formato estandar mux asf codif H.264 (preferiblemente)
+
+4. si no se tiene un cliente con display se recibe con curl o wget
+
+curl <ip>:8080
+
+
+descargar videos
+curl -O --ip

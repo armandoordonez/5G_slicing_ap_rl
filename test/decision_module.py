@@ -44,7 +44,7 @@ class decision_module():
 
     async def scale_decision(self, message):
         await asyncio.sleep(3) 
-        message["scale_decision"] = 0
+        message["scale_decision"] = 1
         return message
         
 

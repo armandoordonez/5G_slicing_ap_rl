@@ -27,12 +27,21 @@ class VnfCpuSupervisor(CpuSubject):
         r = requests.get(self.cadvisor_url)
         print(self.cadvisor_url)
         parsed_json = r.json()
+        #counter = 0 
+        print("member index: {}".format(self.member_index))
+        print()
         for container in parsed_json:
+            
             try:            
                 for alias in container["aliases"]:
+                    #print(counter)
+                    #counter += 1 
+                    #print("ns name: {} alias: {}".format(self.ns_name, alias))
                     if self.ns_name in alias :
+                        #print("container alias: {} vnf number: {} ".format(container["aliases"][0][-1:], self.extract_vnf_number(container["aliases"][0])))
                        
                         if self.extract_vnf_number(container["aliases"][0]) is self.member_index and (container["aliases"][0][-1:] is "1"):
+                            #print("get!")
                             self.docker_id = container["aliases"][1]
                             self.docker_name  = container["aliases"][0]
                             print(container["aliases"])

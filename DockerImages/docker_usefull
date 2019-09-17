@@ -1,0 +1,4 @@
+ docker run --name video_server12 -t -d video_server7
+ docker build -t video_server7 .
+ 
+ docker run --name cpu_and_memory --cpus="0.5" --memory="256m" -t -d ubuntu:trusty

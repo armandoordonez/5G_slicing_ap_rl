@@ -1,0 +1,82 @@
+_admin:
+    created: 1568058089.1274178
+    modified: 1568058089.1274178
+    projects_read:
+    - admin
+    projects_write:
+    - admin
+_id: 016879a0-4323-446f-a50a-6d63ae704a19
+additionalParamsForVnf: null
+connection-point:
+-   connection-point-id: null
+    id: null
+    name: eth0
+-   connection-point-id: null
+    id: null
+    name: eth1
+created-time: 1568058089.1259234
+id: 016879a0-4323-446f-a50a-6d63ae704a19
+ip-address: 172.17.0.3;192.168.100.4
+member-vnf-index-ref: '2'
+nsr-id-ref: 57cd7a4e-df37-46e6-ac56-8fda3573f7c8
+vdur:
+-   _id: 62faba73-552f-41b7-8037-25cb394fef11
+    count-index: 0
+    interfaces:
+    -   ip-address: 172.17.0.3
+        mac-address: 52:e1:f9:a0:23:a3
+        mgmt-vnf: true
+        name: eth0
+        ns-vld-id: nsd_vnfd_vld_mgmt
+    -   ip-address: 172.17.0.3
+        mac-address: 26:49:6f:d3:20:72
+        name: eth1
+        ns-vld-id: nsd_vnfd_vld_data
+    internal-connection-point: []
+    ip-address: 172.17.0.3;192.168.100.4
+    name: ns_net-2-slice_hackfest_vnfd-VM-1
+    status: ACTIVE
+    status-detailed: null
+    vdu-id-ref: slice_hackfest_vnfd-VM
+    vim-id: b9d84214-318d-41c6-8e8c-0ef4d56ed429
+-   _id: f25b4198-7bbf-47b8-b959-96f32a6a1d58
+    count-index: 1
+    interfaces:
+    -   ip-address: 172.17.0.6
+        mac-address: 2a:8f:d5:c1:3f:76
+        mgmt-vnf: true
+        name: eth0
+        ns-vld-id: nsd_vnfd_vld_mgmt
+    -   ip-address: 172.17.0.6
+        mac-address: a6:1c:01:97:ed:09
+        name: eth1
+        ns-vld-id: nsd_vnfd_vld_data
+    internal-connection-point: []
+    ip-address: 172.17.0.6;192.168.100.9
+    name: ns_net-2-slice_hackfest_vnfd-VM-2
+    status: ACTIVE
+    status-detailed: null
+    vdu-id-ref: slice_hackfest_vnfd-VM
+    vim-id: f24dc981-4f40-4555-9189-511224f424fb
+-   _id: 387bdc5d-117d-45a8-83a9-188b999bc2bb
+    count-index: 2
+    interfaces:
+    -   ip-address: 172.17.0.7
+        mac-address: a2:5c:c3:81:2d:05
+        mgmt-vnf: true
+        name: eth0
+        ns-vld-id: nsd_vnfd_vld_mgmt
+    -   ip-address: 172.17.0.7
+        mac-address: 9e:d2:cd:e5:ba:c2
+        name: eth1
+        ns-vld-id: nsd_vnfd_vld_data
+    internal-connection-point: []
+    ip-address: 172.17.0.7;192.168.100.10
+    name: ns_net-2-slice_hackfest_vnfd-VM-3
+    status: ACTIVE
+    status-detailed: null
+    vdu-id-ref: slice_hackfest_vnfd-VM
+    vim-id: 6d0df833-87de-48bf-ae4b-15f4700adffc
+vim-account-id: 44b189f1-dbb6-4d77-9958-fc7ed3da7f0a
+vnfd-id: 48cdaa90-badc-4120-973f-6abdc5d8c09f
+vnfd-ref: slice_hackfest_vnfd
