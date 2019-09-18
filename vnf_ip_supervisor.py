@@ -71,6 +71,7 @@ class VnfCpuSupervisor(CpuSubject):
                 await asyncio.sleep(self.sampling_time_sec)           
                 #self._current_ips = self.get_current_ips()            
                 self.cpu_load = self.get_current_cpu_usage()            
+                print("current ip usage {}".format(self.cpu_load))
                 if self.cpu_load > 50:
                     await self.notify()
            
