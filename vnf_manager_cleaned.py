@@ -72,13 +72,13 @@ class VnfManager(Observer):
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
             await asyncio.sleep(5)
             
-            update_ips(scale_decision["vnf_id"])              
+            self.update_ips(scale_decision["vnf_id"])              
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
             await asyncio.sleep(5)
-            update_ips(scale_decision["vnf_id"])     
+            self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
         async with websockets.connect("ws://localhost:8544") as websocket:
@@ -118,7 +118,7 @@ class VnfManager(Observer):
     def copy_cfg_to_loadbalancer(self):
         copy_command = "docker cp haproxy.cfg {}:/usr/local/etc/haproxy/haproxy.cfg".format(self.load_balancer_docker_id)
         print(copy_command)
-        os.system(copy_command) #
+        os.system(copy_command)
 
     def update_loadbalancer_cfg(self, vnf_id, vnf_ips):
         with open( self.haproxy_cfg_name, "a") as myfile:
