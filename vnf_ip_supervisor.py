@@ -15,7 +15,7 @@ class VnfCpuSupervisor(CpuSubject):
         self.ns_name = ns_name
         self.base_url = base_url        
         self.member_index = member_index + 1 
-        self.cadvisor_url_cpu = cadvisor_url + "v2.0/ps/docker"
+        self.cadvisor_url_cpu = cadvisor_url + "v1.0/containers/docker"
         self.sampling_time_sec = 5 
         self.cadvisor_url = cadvisor_url + "v1.3/subcontainers/docker"
         self.docker_id, self.docker_name = self.get_docker_id()
