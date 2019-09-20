@@ -10,6 +10,7 @@ import asyncio
 import websockets
 import json
 from vnf_scale_order_module import VnfScaleModule
+from shutil import copyfile
 import os
 
 
@@ -62,8 +63,6 @@ class VnfManager(Observer):
         
         scale_decision = json.loads(scale_decision)
         self.print(self.TAG,"scale decision: {} ".format(scale_decision["scale_decision"]))
-        #self.vnf_scale_module_instance.scale_instance(
-        #        scale_decision["vnf_id"], scale_decision["scale_decision"], scale_decision["member_index"])
         self.print(self.TAG,type(scale_decision["scale_decision"]))
             
         if scale_decision["scale_decision"] is 1:
@@ -121,6 +120,7 @@ class VnfManager(Observer):
         os.system(copy_command)
 
     def update_loadbalancer_cfg(self, vnf_id, vnf_ips):
+        copyfile("./example.cfg", self.haproxy_cfg_name)
         with open( self.haproxy_cfg_name, "a") as myfile:
             count = 0 
             # todo extract ips from array.
@@ -128,7 +128,7 @@ class VnfManager(Observer):
             for ip in vnf_ips:
                 print(ip)
                 server_name = "my_server_" + str(vnf_id[:4])
-                parsed_ips = "    server {} {}:{} \n".format(server_name, ip, "7079")
+                parsed_ips = "    server server_{} {}:{} \n".format(ip[-1:], ip, "7079")
                 print(parsed_ips)
                 myfile.write(parsed_ips)
                 count += 1
@@ -166,13 +166,12 @@ class VnfManager(Observer):
         response_in_yaml = load(requests.request(
             "GET", url, data=payload, headers=headers, verify=False).text)
         for ns in response_in_yaml:
-            # self.print(self.TAG,ns["name"])
             ns_list.append(ns["id"])
             internal_dict = {}
             internal_dict["name"] = ns["name"]
             vnf_data = {}
             for index, vnf_list in enumerate(ns["constituent-vnfr-ref"]):
-                # self.print(self.TAG,vnf_list)
+                
                 vnf_data[index] = vnf_list
             internal_dict["vnf"] = vnf_data
             ns_vnf_dict[ns["id"]] = internal_dict
@@ -180,13 +179,16 @@ class VnfManager(Observer):
 
     
     async def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
+        ips  = self.get_current_ips(subject.vnf_id)
+        print("instances number: {}".format(len(ips[subject.vnf_id])))
         message = {
             "cpu": subject.cpu_load,
             "docker_id": subject.docker_id,
             "vnf_id": subject.vnf_id,
             "member_index": subject.member_index,
-            "ns_id": subject.ns_id
-        }
+            "ns_id": subject.ns_id,
+            "number_of_vnfs": str(len(ips[subject.vnf_id]))
+        }        
         await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))

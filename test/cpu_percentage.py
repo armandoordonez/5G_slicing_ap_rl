@@ -28,23 +28,6 @@ class CpuPercentage():
         final_date = self.parse_datetime(parsed_json["stats"][-1:][0]["timestamp"])
         initial_date = self.parse_datetime(parsed_json["stats"][-2:-1][0]["timestamp"])
         print(self.get_current_cpu_percentage(initial_cpu = initial_cpu, final_cpu = final_cpu, initial_date =initial_date, final_date = final_date))
-
-        
-        
-
-
-
-        #print(parsed_json["stats"][-2:-1]["cpu"]["usage"]["total"])
-        """
-        print(parse)
-        for element in parsed_json["stats"]:
-            #print(element['percent_cpu'])
-            print(count)
-            print()
-            count += 1
-            #cpu_percentage = cpu_percentage + float(element['percent_cpu'])    
-
-        """
         return cpu_percentage
 
 if __name__ == "__main__":

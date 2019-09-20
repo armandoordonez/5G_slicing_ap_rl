@@ -1,13 +1,14 @@
 import requests
 import time
 from yaml import load, dump
-import asyncio
+import asyncio, maya
+import math
 from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
 class VnfCpuSupervisor(CpuSubject):
     _current_ips: [] = None
     _current_cpu_load = None 
-
     _observers = None
+
     def __init__(self, cadvisor_url, base_url,  auth_token, vnf_id, ns_name, ns_id, member_index):
         self.auth_token = auth_token
         self.vnf_id  = vnf_id
@@ -18,6 +19,7 @@ class VnfCpuSupervisor(CpuSubject):
         self.cadvisor_url_cpu = cadvisor_url + "v1.0/containers/docker"
         self.sampling_time_sec = 5 
         self.cadvisor_url = cadvisor_url + "v1.3/subcontainers/docker"
+        self.nano_secs = math.pow(10, 9)
         self.docker_id, self.docker_name = self.get_docker_id()
         self.cpu_load = None
         
@@ -31,17 +33,10 @@ class VnfCpuSupervisor(CpuSubject):
         print("member index: {}".format(self.member_index))
         print()
         for container in parsed_json:
-            
             try:            
                 for alias in container["aliases"]:
-                    #print(counter)
-                    #counter += 1 
-                    #print("ns name: {} alias: {}".format(self.ns_name, alias))
-                    if self.ns_name in alias :
-                        #print("container alias: {} vnf number: {} ".format(container["aliases"][0][-1:], self.extract_vnf_number(container["aliases"][0])))
-                       
+                    if self.ns_name in alias :                       
                         if self.extract_vnf_number(container["aliases"][0]) is self.member_index and (container["aliases"][0][-1:] is "1"):
-                            #print("get!")
                             self.docker_id = container["aliases"][1]
                             self.docker_name  = container["aliases"][0]
                             print(container["aliases"])
@@ -69,21 +64,31 @@ class VnfCpuSupervisor(CpuSubject):
         while True:
             if  self.docker_id is not None: 
                 await asyncio.sleep(self.sampling_time_sec)           
-                #self._current_ips = self.get_current_ips()            
                 self.cpu_load = self.get_current_cpu_usage()            
                 print("current ip usage {}".format(self.cpu_load))
-                if self.cpu_load > 50:
+                if self.cpu_load > 0.3:
                     await self.notify()
            
     def get_current_cpu_usage(self):
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_id)
-        #print(self.cadvisor_url_cpu+"/"+self.docker_id)
+        print("cpu_url = {}".format(self.cadvisor_url_cpu+"/"+self.docker_id))
         parsed_json = r.json()
         cpu_percentage = 0
-        for element in parsed_json:
-            #print(element['percent_cpu'])
-            cpu_percentage = cpu_percentage + float(element['percent_cpu'])    
+        count = 0
+        final_cpu  = parsed_json["stats"][-1:][0]["cpu"]["usage"]["total"]
+        initial_cpu = parsed_json["stats"][-2:-1][0]["cpu"]["usage"]["total"]
+        final_date = self.parse_datetime(parsed_json["stats"][-1:][0]["timestamp"])
+        initial_date = self.parse_datetime(parsed_json["stats"][-2:-1][0]["timestamp"])
+        cpu_percentage = self.get_current_cpu_percentage(initial_cpu = initial_cpu, final_cpu = final_cpu, initial_date =initial_date, final_date = final_date)    
         return cpu_percentage
+    def get_current_cpu_percentage(self,initial_cpu, final_cpu, initial_date, final_date):
+        date_delta = final_date - initial_date
+        cpu_load = (final_cpu-initial_cpu)/(date_delta.total_seconds()* self.nano_secs)
+        print("{} %".format(cpu_load))
+        return cpu_load
+   
+    def parse_datetime(self, date):
+        return maya.parse(date).datetime()
     
     def attach (self, observer) -> None:
         print("{} subject: attached to an observer".format(self.vnf_id))
@@ -95,6 +100,5 @@ class VnfCpuSupervisor(CpuSubject):
     
     
     async def notify(self) -> None: 
-        #print("total observers {}, notifying observers...".format(len(self._observers)))
         print("notifying....")
         await self._observers.updateCpuUsageSubject(self)
