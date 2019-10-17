@@ -1,7 +1,7 @@
 import asyncio
 import argparse
 import aiohttp
-import gc
+#import gc
 class MultipleRequest():
     def __init__(self, target_ip, target_port):
         self.target_ip = "http://"+target_ip + ":" + target_port
@@ -17,10 +17,10 @@ class MultipleRequest():
             gather_vector = []
             for _ in range(55): # 55 
                 gather_vector.append(self.download(self.target_ip))
-            results = await asyncio.gather(*gather_vector)
+            await asyncio.gather(*gather_vector)
             await asyncio.sleep(3)
-            print(results)
-            gc.collect()
+            
+            #gc.collect()
             #await asyncio.gather(*gather_vector)
 
     async def download(self, url):
@@ -30,8 +30,6 @@ class MultipleRequest():
                 await response.content.read() 
                 response.close()
                 print("download finished....")
-            await session.close()
-        return 200
 
     async def stream(self, url):
         async with aiohttp.ClientSession() as session:
