@@ -65,7 +65,7 @@ class VnfCpuSupervisor(CpuSubject):
             if  self.docker_id is not None: 
                 await asyncio.sleep(self.sampling_time_sec)           
                 self.cpu_load = self.get_current_cpu_usage()            
-                print("current ip usage {}".format(self.cpu_load))
+                print("current ip usage {} {}".format(self.cpu_load, self.docker_name))
                 if self.cpu_load > 0.3:
                     await self.notify()
            

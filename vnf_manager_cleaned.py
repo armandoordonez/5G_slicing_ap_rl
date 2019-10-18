@@ -209,4 +209,6 @@ if __name__ == "__main__":
     main_url = "https://"+args.dst_ip
     print("base_url: {}".format(main_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     VnfManager(base_url=main_url, sdm_ip=sdm_ip)
