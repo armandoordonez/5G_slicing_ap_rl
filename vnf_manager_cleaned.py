@@ -201,8 +201,12 @@ if __name__ == "__main__":
     parser.add_argument('--dst_ip', default="localhost", help='destination ip')
     parser.add_argument('--sdm_ip', default="localhost",
                         help="scale decision module ip")
+    parser.add_argument('--sdm_port', default=8544,
+                        help="scale decision module port")
+    
     args = parser.parse_args()
+    sdm_ip = "ws://"+args.sdm_ip+":"+str(args.sdm_port)
     main_url = "https://"+args.dst_ip
     print("base_url: {}".format(main_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    VnfManager(base_url=main_url, sdm_ip="ws://localhost:8544")
+    VnfManager(base_url=main_url, sdm_ip=sdm_ip)

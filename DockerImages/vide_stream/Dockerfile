@@ -16,4 +16,5 @@ CMD unset DISPLAY; vlc-wrapper -R -vvv /home/video_server/video.mp4 --sout '#sta
 # 1lAlw_lbzELBhQ1nPeAxNFgs3UHE48FAC
 
 # wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=FILEID" -O FILENAME && rm -rf /tmp/cookies.txt
-
+# 13Ok0100UDJKQfT5346naXnOa4gpB7Uwo
+# wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=13Ok0100UDJKQfT5346naXnOa4gpB7Uwo' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=13Ok0100UDJKQfT5346naXnOa4gpB7Uwo" -O Expedition_Curved.mp4 && rm -rf /tmp/cookies.txt

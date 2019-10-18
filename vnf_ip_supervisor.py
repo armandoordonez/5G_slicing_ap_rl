@@ -71,7 +71,7 @@ class VnfCpuSupervisor(CpuSubject):
            
     def get_current_cpu_usage(self):
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_id)
-        print("cpu_url = {}".format(self.cadvisor_url_cpu+"/"+self.docker_id))
+        #print("cpu_url = {}".format(self.cadvisor_url_cpu+"/"+self.docker_id))
         parsed_json = r.json()
         cpu_percentage = 0
         count = 0
