@@ -65,7 +65,7 @@ class VnfCpuSupervisor(CpuSubject):
             if  self.docker_id is not None: 
                 await asyncio.sleep(self.sampling_time_sec)           
                 self.cpu_load = self.get_current_cpu_usage()            
-                print("current ip usage {} {}".format(self.cpu_load, self.docker_name))
+                print("cpu load:{}% name:{}".format(self.cpu_load, self.docker_name))
                 if self.cpu_load > 0.3:
                     await self.notify()
            
@@ -84,7 +84,6 @@ class VnfCpuSupervisor(CpuSubject):
     def get_current_cpu_percentage(self,initial_cpu, final_cpu, initial_date, final_date):
         date_delta = final_date - initial_date
         cpu_load = (final_cpu-initial_cpu)/(date_delta.total_seconds()* self.nano_secs)
-        print("{} %".format(cpu_load))
         return cpu_load
    
     def parse_datetime(self, date):
