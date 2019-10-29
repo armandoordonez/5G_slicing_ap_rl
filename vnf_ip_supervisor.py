@@ -3,6 +3,7 @@ import time
 from yaml import load, dump
 import asyncio, maya
 import math
+import os
 from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
 class VnfCpuSupervisor(CpuSubject):
     _current_ips: [] = None
@@ -22,6 +23,7 @@ class VnfCpuSupervisor(CpuSubject):
         self.nano_secs = math.pow(10, 9)
         self.docker_id, self.docker_name = self.get_docker_id()
         self.cpu_load = None
+        self.init_docker_service()
         
                 
     #todo: sistema no funciona si no hay dockers containers corriendo 
@@ -97,6 +99,9 @@ class VnfCpuSupervisor(CpuSubject):
         print("subject: remove  an observer")
         self._observers = None
     
+    def init_docker_service(self):
+        command = "docker exec -it "+self.docker_id+" /bin/bash /etc/init.d/apache2 start"
+        os.system(command)                
     
     async def notify(self) -> None: 
         print("notifying....")

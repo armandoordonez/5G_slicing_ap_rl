@@ -80,7 +80,7 @@ class VnfManager(Observer):
             self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
-        async with websockets.connect("ws://localhost:8544") as websocket:
+        async with websockets.connect("ws://localhost:8544") as websocket: #todo poner esta direccion de manera no hardcodding
             await websocket.send(message)
 
     def get_osm_authentication_token(self, base_url):
@@ -189,7 +189,7 @@ class VnfManager(Observer):
             "ns_id": subject.ns_id,
             "number_of_vnfs": str(len(ips[subject.vnf_id]))
         }        
-        await self.send_alert_to_sdm(json.dumps(message))
+        #await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
 
@@ -212,3 +212,4 @@ if __name__ == "__main__":
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     VnfManager(base_url=main_url, sdm_ip=sdm_ip)
+

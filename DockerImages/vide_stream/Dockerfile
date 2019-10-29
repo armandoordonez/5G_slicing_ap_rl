@@ -1,7 +1,7 @@
 from ubuntu:trusty 
 RUN apt-get -y update 
 RUN apt-get -y install vlc
-RUN useradd -ms /bin/bash video_server 
+#RUN useradd -ms /bin/bash video_server 
 #RUN whoami
 USER video_server
 #RUN whoami
