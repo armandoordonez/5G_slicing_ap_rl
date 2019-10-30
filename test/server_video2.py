@@ -10,8 +10,6 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
         with open(FILEPATH, 'rb') as f:
             self.send_response(200)
-
-            # serve up an infinite stream
             self.send_header("Content-Type", 'application/octet-stream')
             self.send_header("Content-Disposition", 'attachment; filename="{}"'.format(os.path.basename(FILEPATH)))
             fs = os.fstat(f.fileno())

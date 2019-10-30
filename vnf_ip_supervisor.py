@@ -100,7 +100,7 @@ class VnfCpuSupervisor(CpuSubject):
         self._observers = None
     
     def init_docker_service(self):
-        command = "docker exec -it "+self.docker_id+" /bin/bash /etc/init.d/apache2 start"
+        command = "docker exec -it "+self.docker_id+" nohup python3 /home/server.py &"
         os.system(command)                
     
     async def notify(self) -> None: 
