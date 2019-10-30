@@ -105,6 +105,7 @@ class VnfCpuSupervisor(CpuSubject):
         command = "docker exec -it "+self.docker_id+" nohup python3 /home/server.py &"
         print(command)
         os.system(command)           
+        os.system("\n")
 
     
     async def notify(self) -> None: 
