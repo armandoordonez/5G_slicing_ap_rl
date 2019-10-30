@@ -128,7 +128,7 @@ class VnfManager(Observer):
             for ip in vnf_ips:
                 print(ip)
                 server_name = "my_server_" + str(vnf_id[:4])
-                parsed_ips = "    server server_{} {}:{} \n".format(ip[-1:], ip, "7079")
+                parsed_ips = "    server server_{} {}:{}/{} \n".format(ip[-1:], ip, "7079","video.mp4")
                 print(parsed_ips)
                 myfile.write(parsed_ips)
                 count += 1
