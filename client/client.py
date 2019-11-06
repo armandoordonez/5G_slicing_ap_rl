@@ -9,6 +9,7 @@ class MultipleRequest():
         self.clients = clients
         self.interval = interval
         self.debug = debug
+        self.filename = filename
         self.custom_print("target ip: {}".format(self.target_ip))    
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.set_clients())
@@ -53,4 +54,7 @@ if __name__ == "__main__":
     parser.add_argument('--interval', default="0", help='Number of seconds between each requests')
     parser.add_argument('--debug', default=False, help='If you wanna some help..')
     args = parser.parse_args()
-    MultipleRequest(args.target_ip, args.target_port, int(args.clients), int(args.interval), args.debug, filename)
+    MultipleRequest(args.target_ip, args.target_port, int(args.clients), int(args.interval), args.debug, args.filename)
+
+
+#todo: delete the download option....
