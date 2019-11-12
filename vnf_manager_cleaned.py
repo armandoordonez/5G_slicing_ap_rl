@@ -63,9 +63,14 @@ class VnfManager(Observer):
     def set_ips(self, vnf_ids):
         print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = []
+        only_ips = []
         for vnf_id in vnf_ids:
             vnf_ips.append(self.get_current_ips(vnf_id))
-        print(vnf_ips)
+        only_ips = vnf_ips.values()
+        
+
+        print(only_ips)
+        
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
@@ -151,7 +156,7 @@ class VnfManager(Observer):
             'Authorization': "Bearer "+self.auth_token,
             'cache-control': "no-cache",
             }
-        print(url)
+        #print(url)
         response = requests.request("GET", url, data=payload, headers=headers, verify=False)        
         current_ips = []           
         vnf_ips = {}
@@ -159,7 +164,7 @@ class VnfManager(Observer):
         for element in response_in_yaml["vdur"]:
                 current_ips.append(element["interfaces"][0]["ip-address"])                    
         vnf_ips[vnf_id] = current_ips
-        print(vnf_ips)
+        #print(vnf_ips)
         return vnf_ips
 
     def get_nsid_list(self, base_url, auth_token):
