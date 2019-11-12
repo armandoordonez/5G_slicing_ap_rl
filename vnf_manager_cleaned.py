@@ -65,9 +65,10 @@ class VnfManager(Observer):
         vnf_ips = []
         only_ips = []
         for vnf_id in vnf_ids:
+            print(self.get_current_ips(vnf_ids).values())
             vnf_ips.append(list(self.get_current_ips(vnf_id).values()))
         
-        print(vnf_ips)
+        #print(vnf_ips)
         
 
     async def server_function(self, websocket, path):
