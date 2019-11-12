@@ -14,3 +14,5 @@ Extract stats and act as a middle man between the IA and the docker containers. 
 
 Execute vnf_manager_cleaned.py --dst_ip osm_ip --sdm_ip  reinforcement_learning_ip --sdm_port reinforcement_learning_port to enable the monitoring over the osm, the script is in charge of send parsed data to the reinforcement learning algorithm.
 
+# Warnings
+- Dont  use "-" in the vnf-names

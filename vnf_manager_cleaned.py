@@ -9,7 +9,7 @@ from ObserverPattern.vnf_observer_pattern import VnfCpuSubject as CpuSubject
 import asyncio
 import websockets
 import json
-from vnf_scale_order_module import VnfScaleModule
+#from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
 
@@ -17,46 +17,52 @@ import os
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
-        self.load_balancer_docker_id = "haproxy"
-        self.haproxy_cfg_name = "haproxy.cfg"
-        self.sdm_port = sdm_port
-        self.sdm_ip = sdm_ip
+        self.load_balancer_docker_id = "haproxy" # it's the docker name of the load balancer 
+        self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
+        self.sdm_port = sdm_port # port of the scale decision module 
+        self.sdm_ip = sdm_ip # port of the scale decision module ip
         print(self.TAG,"init")
-        print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name))
-        self.start(base_url, sdm_ip)
+        print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
+        self.start(base_url, sdm_ip) #main loop
 
     def print(self, TAG, string):
         print("class: {}, {}".format(TAG, string))
         
     def start(self, base_url, sdm_ip):
-        cadvisor_url = base_url.replace("https", "http") + ":8080/api/"
+        cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
-        auth_token = self.get_osm_authentication_token(base_url=self.base_url)
+        auth_token = self.get_osm_authentication_token(base_url=self.base_url) # sends a posts requests to get the auth token
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
-        self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)
+        #self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token) 
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
         vnf_supervisor_instances = {}
+        vnf_ids = []
         for key, ns in ns_vnf_list.items():
             for vnf in ns["vnf"]:
                 self.print(self.TAG,"ns name:{}".format(ns["name"]))
                 self.print(self.TAG,"vnf:{}".format(ns["vnf"][vnf]))
-                self.update_ips(vnf_id = ns["vnf"][vnf])
+                #self.update_ips(vnf_id = ns["vnf"][vnf])
+                vnf_ids.append(ns["vnf"][vnf])
                 vnf_supervisor_instance = VnfCpuSupervisor(
                     cadvisor_url=cadvisor_url, base_url=self.base_url, auth_token=auth_token, vnf_id=ns["vnf"][vnf], ns_id=key, ns_name=ns["name"], member_index=vnf)
                 vnf_supervisor_instance.attach(self)
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
                 vnf_supervisor_instances[ns["vnf"]
                                          [vnf]] = vnf_supervisor_instance
+        self.set_ips(vnf_ids = vnf_ids)
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
+    def set_ips(self, vnf_ids):
+        vnf_ips = [ self.get_current_ips(vnf_id) for vnf_id in vnf_ids]
+        print(vnf_ips)
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
@@ -176,6 +182,8 @@ class VnfManager(Observer):
                 vnf_data[index] = vnf_list
             internal_dict["vnf"] = vnf_data
             ns_vnf_dict[ns["id"]] = internal_dict
+        #ns_list[array] -> contains id of the ns
+        # ns_vnf_dict[dict{dict}]
         return ns_list, ns_vnf_dict
 
     
