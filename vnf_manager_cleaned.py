@@ -65,11 +65,9 @@ class VnfManager(Observer):
         vnf_ips = []
         only_ips = []
         for vnf_id in vnf_ids:
-            vnf_ips.append(self.get_current_ips(vnf_id))
-        only_ips = vnf_ips.values()
+            vnf_ips.append(self.get_current_ips(vnf_id).values())
         
-
-        print(only_ips)
+        print(vnf_ips)
         
 
     async def server_function(self, websocket, path):
@@ -164,7 +162,7 @@ class VnfManager(Observer):
         for element in response_in_yaml["vdur"]:
                 current_ips.append(element["interfaces"][0]["ip-address"])                    
         vnf_ips[vnf_id] = current_ips
-        #print(vnf_ips)
+        print(vnf_ips)
         return vnf_ips
 
     def get_nsid_list(self, base_url, auth_token):
