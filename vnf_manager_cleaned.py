@@ -61,7 +61,7 @@ class VnfManager(Observer):
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
     def set_ips(self, vnf_ids):
-        print("setting ips..".format(len(vnf_ids)))
+        print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = [ self.get_current_ips(vnf_id) for vnf_id in vnf_ids]
         print(vnf_ips)
 
