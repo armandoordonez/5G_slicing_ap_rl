@@ -15,13 +15,16 @@ import os
 
 
 class VnfManager(Observer):
-    def __init__(self, base_url, sdm_ip):
+    def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
         self.load_balancer_docker_id = "haproxy"
         self.haproxy_cfg_name = "haproxy.cfg"
+        self.sdm_port = sdm_port
+        self.sdm_ip = sdm_ip
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name))
         self.start(base_url, sdm_ip)
+
     def print(self, TAG, string):
         print("class: {}, {}".format(TAG, string))
         
@@ -31,13 +34,11 @@ class VnfManager(Observer):
         auth_token = self.get_osm_authentication_token(base_url=self.base_url)
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
-
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
-
         vnf_supervisor_instances = {}
         for key, ns in ns_vnf_list.items():
             for vnf in ns["vnf"]:
@@ -50,7 +51,6 @@ class VnfManager(Observer):
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
                 vnf_supervisor_instances[ns["vnf"]
                                          [vnf]] = vnf_supervisor_instance
-
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
@@ -80,8 +80,9 @@ class VnfManager(Observer):
             self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
-        async with websockets.connect("ws://localhost:8544") as websocket: #todo poner esta direccion de manera no hardcodding
-            await websocket.send(message)
+        async with websockets.connect("ws://"+self.sdm_ip+":"+self.sdm_port) as websocket: #todo poner esta direccion de manera no hardcodding
+            #await websocket.send(message)
+            pass
 
     def get_osm_authentication_token(self, base_url):
         url = base_url + "admin/v1/tokens"
@@ -189,7 +190,7 @@ class VnfManager(Observer):
             "ns_id": subject.ns_id,
             "number_of_vnfs": str(len(ips[subject.vnf_id]))
         }        
-        #await self.send_alert_to_sdm(json.dumps(message))
+        await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
 
@@ -211,5 +212,5 @@ if __name__ == "__main__":
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    VnfManager(base_url=main_url, sdm_ip=sdm_ip)
+    VnfManager(base_url=main_url, sdm_ip=sdm_ip, sdm_port = args.sdm_port)
 

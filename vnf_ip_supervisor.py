@@ -45,7 +45,6 @@ class VnfCpuSupervisor(CpuSubject):
                             print(container["aliases"][0][-1:])
                         #todo implement mapping between docker_id, docker_name, vnfd, ns
             except KeyError as e:
-                
                 pass
                 print("catch error:{}".format(e))
         
