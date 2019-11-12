@@ -62,7 +62,9 @@ class VnfManager(Observer):
         loop.run_forever()
     def set_ips(self, vnf_ids):
         print("setting ips.. {}".format(len(vnf_ids)))
-        vnf_ips = [ self.get_current_ips(vnf_id) for vnf_id in vnf_ids]
+        vnf_ips = []
+        for vnf_id in vnf_ids:
+            vnf_ips.append(self.get_current_ips(vnf_id))
         print(vnf_ips)
 
     async def server_function(self, websocket, path):
