@@ -65,9 +65,10 @@ class VnfManager(Observer):
         vnf_ips = []
         only_ips = []
         for vnf_id in vnf_ids:
-            print(self.get_current_ips(vnf_ids).values())
+            for ip in self.get_current_ips(vnf_id).values():
+                only_ips.append(ip)
             vnf_ips.append(list(self.get_current_ips(vnf_id).values()))
-        
+        print(only_ips)
         #print(vnf_ips)
         
 
