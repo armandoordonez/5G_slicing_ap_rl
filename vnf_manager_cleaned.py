@@ -130,7 +130,7 @@ class VnfManager(Observer):
         ip_list = []
         for vnf in vnf_list:
             ip_list.append(self.get_ips_from(vnf))
-        print("debbugging.. ips {}".format(ip_list)
+        print("debbugging.. ips {}".format(ip_list))
 
 
     def get_current_vnfs(self):
