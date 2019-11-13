@@ -133,18 +133,6 @@ class VnfManager(Observer):
         print("debbugging.. ips {}".format(ip_list)
 
 
-    """
-    def update_ips(self, vnf_id):
-        vnf_ips = self.get_current_ips(vnf_id)
-        print(vnf_ips)
-        only_vnf_ips = []
-        for ips in vnf_ips.values():
-            only_vnf_ips = ips
-        self.update_loadbalancer_cfg(only_vnf_ips)
-        self.copy_cfg_to_loadbalancer()
-        self.restart_loadbalancer()
-        return vnf_ips
-    """
     def get_current_vnfs(self):
         vnf_list = []
         _, ns_vnf_dict = self.get_nsid_list(self.base_url, self.auth_token)
