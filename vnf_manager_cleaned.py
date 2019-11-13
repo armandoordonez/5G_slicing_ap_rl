@@ -136,7 +136,7 @@ class VnfManager(Observer):
         _, ns_vnf_dict = self.get_nsid_list(self.base_url, self.auth_token)
         for key, ns in ns_vnf_dict.items():
             print("type of  {}".format(type(ns["vnf"])))
-            for vnf in ns["vnf"]:
+            for index, vnf in ns["vnf"].items():
                 print("making debugging {} {}".format(vnf, type(vnf)))
 
 
