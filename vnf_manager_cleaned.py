@@ -39,6 +39,7 @@ class VnfManager(Observer):
         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         print(self.get_current_vnfs())
+        self.set_ips_in_lb()
         self.update_ips_lb()
         """
         loop = asyncio.get_event_loop()
@@ -105,7 +106,7 @@ class VnfManager(Observer):
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
-    def set_ips(self, vnf_ids):
+    def set_ips_in_lb(self, vnf_ids):
         print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = []
         for vnf_id in vnf_ids:
