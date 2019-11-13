@@ -120,9 +120,8 @@ class VnfManager(Observer):
         only_ips = []
         for ips in self.get_current_ips(vnf).values():
                 for ip in ips:
-                    print(ip)
                     only_ips.append(ip)
-        return only_ips
+        return only_ips # returning a list of ips from a given vnf
     #todo function to send to the client to update the ips of the vnfs
     # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
     
@@ -130,7 +129,8 @@ class VnfManager(Observer):
         vnf_list = self.get_current_vnfs()
         ip_list = []
         for vnf in vnf_list:
-            ip_list.append(self.get_ips_from(vnf))
+            for ip in self.get_ips_from(vnf):
+                ip_list.append(ip)
         print("debbugging.. ips {}".format(ip_list))
 
 
