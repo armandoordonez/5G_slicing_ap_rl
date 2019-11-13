@@ -111,7 +111,7 @@ class VnfManager(Observer):
         vnf_ips = []
         for vnf_id in vnf_ids:
             vnf_ips.append(self.get_ips_from(vnf_id))
-        print(only_ips)
+        print(vnf_ips)
         copyfile("./example.cfg", self.haproxy_cfg_name)
         self.add_ips_to_load_balancer(only_ips)
         self.copy_cfg_to_loadbalancer()
