@@ -132,6 +132,10 @@ class VnfManager(Observer):
             for ip in self.get_ips_from(vnf):
                 ip_list.append(ip)
         print("debbugging.. ips {}".format(ip_list))
+        #time to reload the loadbalancer...
+        self.add_ips_to_load_balancer(ip_list)
+        self.copy_cfg_to_loadbalancer()
+        self.restart_loadbalancer()
 
 
     def get_current_vnfs(self):
