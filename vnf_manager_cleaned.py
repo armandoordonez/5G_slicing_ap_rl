@@ -35,7 +35,11 @@ class VnfManager(Observer):
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
         #self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token) 
+        
+        
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
+        self.get_current_vnfs()
+        """
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
@@ -45,7 +49,6 @@ class VnfManager(Observer):
             for vnf in ns["vnf"]:
                 self.print(self.TAG,"ns name:{}".format(ns["name"]))
                 self.print(self.TAG,"vnf:{}".format(ns["vnf"][vnf]))
-                #self.update_ips(vnf_id = ns["vnf"][vnf])
                 vnf_ids.append(ns["vnf"][vnf])
                 vnf_supervisor_instance = VnfCpuSupervisor(
                     cadvisor_url=cadvisor_url, base_url=self.base_url, auth_token=auth_token, vnf_id=ns["vnf"][vnf], ns_id=key, ns_name=ns["name"], member_index=vnf)
@@ -60,18 +63,7 @@ class VnfManager(Observer):
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-    def set_ips(self, vnf_ids):
-        print("setting ips.. {}".format(len(vnf_ids)))
-        vnf_ips = []
-        only_ips = []
-        for vnf_id in vnf_ids:
-            for ips in self.get_current_ips(vnf_id).values():
-                for ip in ips:
-                    only_ips.append(ip)
-        print(only_ips)
-        
-        #print(vnf_ips)
-        
+        """
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
@@ -85,19 +77,20 @@ class VnfManager(Observer):
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
             await asyncio.sleep(5)
-            
-            self.update_ips(scale_decision["vnf_id"])              
+            self.update_ips()
+            #self.update_ips(scale_decision["vnf_id"])              
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
             await asyncio.sleep(5)
-            self.update_ips(scale_decision["vnf_id"])     
+            self.update_ips()
+            #self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
         async with websockets.connect("ws://"+self.sdm_ip+":"+self.sdm_port) as websocket: #todo poner esta direccion de manera no hardcodding
-            #await websocket.send(message)
-            pass
+            await websocket.send(message)
+            
 
     def get_osm_authentication_token(self, base_url):
         url = base_url + "admin/v1/tokens"
@@ -111,20 +104,43 @@ class VnfManager(Observer):
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
-    
+    def set_ips(self, vnf_ids):
+        print("setting ips.. {}".format(len(vnf_ids)))
+        vnf_ips = []
+        only_ips = []
+        for vnf_id in vnf_ids:
+            for ips in self.get_current_ips(vnf_id).values():
+                for ip in ips:
+                    only_ips.append(ip)
+        print(only_ips)
+        copyfile("./example.cfg", self.haproxy_cfg_name)
+        self.add_ips_to_load_balancer(only_ips)
+        self.copy_cfg_to_loadbalancer()
+        self.restart_loadbalancer()      
     #todo function to send to the client to update the ips of the vnfs
     # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
+    """
     def update_ips(self, vnf_id):
         vnf_ips = self.get_current_ips(vnf_id)
         print(vnf_ips)
         only_vnf_ips = []
         for ips in vnf_ips.values():
             only_vnf_ips = ips
-        self.update_loadbalancer_cfg(vnf_id, only_vnf_ips)
+        self.update_loadbalancer_cfg(only_vnf_ips)
         self.copy_cfg_to_loadbalancer()
         self.restart_loadbalancer()
         return vnf_ips
-    
+    """
+    def get_current_vnfs(self):
+        vnf_list = []
+        _, ns_vnf_dict = self.get_nsid_list(self.base_url, self.auth_token)
+        for key, ns in ns_vnf_dict.items():
+            for vnf in ns["vnf"]:
+                print("making debugging {}".format(vnf))
+
+
+        return vnf_list
+
     def restart_loadbalancer(self):
         restart_command = "docker restart {}".format(self.load_balancer_docker_id)
         print(restart_command)
@@ -135,15 +151,12 @@ class VnfManager(Observer):
         print(copy_command)
         os.system(copy_command)
 
-    def update_loadbalancer_cfg(self, vnf_id, vnf_ips):
-        copyfile("./example.cfg", self.haproxy_cfg_name)
-        with open( self.haproxy_cfg_name, "a") as myfile:
+    def add_ips_to_load_balancer(self, vnf_ips):
+        with open(self.haproxy_cfg_name, "a") as myfile:
             count = 0 
-            # todo extract ips from array.
             print(vnf_ips)
             for ip in vnf_ips:
                 print(ip)
-                server_name = "my_server_" + str(vnf_id[:4])
                 parsed_ips = "    server server_{} {}:{}/{}/{} \n".format(ip[-1:], ip, "8080","download","video.mp4")
                 print(parsed_ips)
                 myfile.write(parsed_ips)
@@ -157,7 +170,6 @@ class VnfManager(Observer):
             'Authorization': "Bearer "+self.auth_token,
             'cache-control': "no-cache",
             }
-        #print(url)
         response = requests.request("GET", url, data=payload, headers=headers, verify=False)        
         current_ips = []           
         vnf_ips = {}
@@ -187,15 +199,13 @@ class VnfManager(Observer):
             internal_dict["name"] = ns["name"]
             vnf_data = {}
             for index, vnf_list in enumerate(ns["constituent-vnfr-ref"]):
-                
                 vnf_data[index] = vnf_list
             internal_dict["vnf"] = vnf_data
             ns_vnf_dict[ns["id"]] = internal_dict
-        #ns_list[array] -> contains id of the ns
-        # ns_vnf_dict[dict{dict}]
+        # {'network_slice_id': {'name': 'ns_name', 'vnf':{index: 'vnf_id_at_index_0'}}}
+        #{'a4833c61-bc96-4b9a-b392-7e05800a7499': {'name': 'ns_name', 'vnf': {0: 'ea37c34f-6e85-46e4-a424-4cb69c0a8735', 1: '64bb6800-d23b-432f-a0c7-16a990e36492'}}}
         return ns_list, ns_vnf_dict
 
-    
     async def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
         ips  = self.get_current_ips(subject.vnf_id)
         print("instances number: {}".format(len(ips[subject.vnf_id])))
