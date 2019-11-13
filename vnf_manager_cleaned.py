@@ -39,7 +39,8 @@ class VnfManager(Observer):
         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         print(self.get_current_vnfs())
-        self.set_ips_in_lb(self.get_current_vnfs()) # 
+        self.update_ips_lb()
+        self.update_ips_lb()
         self.update_ips_lb()
         """
         loop = asyncio.get_event_loop()
@@ -106,6 +107,7 @@ class VnfManager(Observer):
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
+    """
     def set_ips_in_lb(self, vnf_ids): #used at first time...
         print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = []
@@ -117,7 +119,9 @@ class VnfManager(Observer):
         copyfile("./example.cfg", self.haproxy_cfg_name)
         self.add_ips_to_load_balancer(only_ips)
         self.copy_cfg_to_loadbalancer()
-        self.restart_loadbalancer()    
+        self.restart_loadbalancer()   
+
+    """
 
     def get_ips_from(self, vnf):
         only_ips = []
@@ -130,6 +134,8 @@ class VnfManager(Observer):
     
     def update_ips_lb(self): #update ips with the new ones at the load balancer
         # used on onchange _scale up or scale down
+        copyfile("./example.cfg", self.haproxy_cfg_name)
+
         vnf_list = self.get_current_vnfs()
         ip_list = []
         for vnf in vnf_list:
