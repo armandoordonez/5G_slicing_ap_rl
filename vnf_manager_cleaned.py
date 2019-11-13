@@ -38,7 +38,7 @@ class VnfManager(Observer):
         
         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
-        self.get_current_vnfs()
+        print(self.get_current_vnfs())
         """
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
@@ -135,11 +135,10 @@ class VnfManager(Observer):
         vnf_list = []
         _, ns_vnf_dict = self.get_nsid_list(self.base_url, self.auth_token)
         for key, ns in ns_vnf_dict.items():
-            print("type of  {}".format(type(ns["vnf"])))
+            #print("type of  {}".format(type(ns["vnf"])))
             for index, vnf in ns["vnf"].items():
-                print("making debugging {} {}".format(vnf, type(vnf)))
-
-
+                #print("making debugging {} {}".format(vnf, type(vnf)))
+                vnf_list.append(vnf)
         return vnf_list
 
     def restart_loadbalancer(self):
