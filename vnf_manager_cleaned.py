@@ -109,8 +109,10 @@ class VnfManager(Observer):
     def set_ips_in_lb(self, vnf_ids): #used at first time...
         print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = []
+        only_ips = []
         for vnf_id in vnf_ids:
-            vnf_ips.append(self.get_ips_from(vnf_id))
+            for ip in self.get_ips_from(vnf_id):
+                only_ips.append(ip)
         print(vnf_ips)
         copyfile("./example.cfg", self.haproxy_cfg_name)
         self.add_ips_to_load_balancer(only_ips)
