@@ -120,6 +120,7 @@ class VnfManager(Observer):
         only_ips = []
         for ips in self.get_current_ips(vnf).values():
                 for ip in ips:
+                    print(ip)
                     only_ips.append(ip)
         return only_ips
     #todo function to send to the client to update the ips of the vnfs
