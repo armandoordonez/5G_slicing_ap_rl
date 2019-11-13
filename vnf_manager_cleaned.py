@@ -39,6 +39,7 @@ class VnfManager(Observer):
         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         print(self.get_current_vnfs())
+        self.update_ips_lb()
         """
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
@@ -107,18 +108,31 @@ class VnfManager(Observer):
     def set_ips(self, vnf_ids):
         print("setting ips.. {}".format(len(vnf_ids)))
         vnf_ips = []
-        only_ips = []
         for vnf_id in vnf_ids:
-            for ips in self.get_current_ips(vnf_id).values():
-                for ip in ips:
-                    only_ips.append(ip)
+            vnf_ips.append(self.get_ips_from(vnf_id))
         print(only_ips)
         copyfile("./example.cfg", self.haproxy_cfg_name)
         self.add_ips_to_load_balancer(only_ips)
         self.copy_cfg_to_loadbalancer()
-        self.restart_loadbalancer()      
+        self.restart_loadbalancer()    
+
+    def get_ips_from(self, vnf):
+        only_ips = []
+        for ips in self.get_current_ips(vnf_id).values():
+                for ip in ips:
+                    only_ips.append(ip)
+        return only_ips
     #todo function to send to the client to update the ips of the vnfs
     # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
+    
+    def update_ips_lb(self): #update ips with the new ones at the load balancer
+        vnf_list = self.get_current_vnfs()
+        ip_list = []
+        for vnf in vnf_list:
+            ip_list.append(self.get_ips_from(vnf))
+        print("debbugging.. ips {}".format(ip_list)
+
+
     """
     def update_ips(self, vnf_id):
         vnf_ips = self.get_current_ips(vnf_id)
