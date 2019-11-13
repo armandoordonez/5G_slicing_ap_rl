@@ -118,7 +118,7 @@ class VnfManager(Observer):
 
     def get_ips_from(self, vnf):
         only_ips = []
-        for ips in self.get_current_ips(vnf_id).values():
+        for ips in self.get_current_ips(vnf).values():
                 for ip in ips:
                     only_ips.append(ip)
         return only_ips
