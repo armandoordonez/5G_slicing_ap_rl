@@ -9,7 +9,7 @@ from ObserverPattern.vnf_observer_pattern import VnfCpuSubject as CpuSubject
 import asyncio
 import websockets
 import json
-#from vnf_scale_order_module import VnfScaleModule
+from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
