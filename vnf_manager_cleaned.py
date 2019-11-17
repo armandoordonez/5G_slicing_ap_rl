@@ -239,7 +239,7 @@ if __name__ == "__main__":
     parser.add_argument('--dst_ip', default="localhost", help='destination ip')
     parser.add_argument('--sdm_ip', default="localhost",
                         help="scale decision module ip")
-    parser.add_argument('--sdm_port', default=8544,
+    parser.add_argument('--sdm_port', default="8544",
                         help="scale decision module port")
     
     args = parser.parse_args()
