@@ -101,7 +101,7 @@ class VnfCpuSupervisor(CpuSubject):
     def init_docker_service(self):
         print("init service")
         time.sleep(4)
-        command = "docker exec -i "+self.docker_id+" nohup python3 /home/server.py &"
+        command = "docker exec -i "+self.docker_id+" nohup python3 /home/server.py >server.log 2>&1&"
         print(command)
         os.system(command)           
         os.system("\n")
