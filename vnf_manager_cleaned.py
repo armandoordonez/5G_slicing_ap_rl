@@ -12,8 +12,7 @@ import json
 #from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
-
-
+#current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
@@ -34,15 +33,9 @@ class VnfManager(Observer):
         auth_token = self.get_osm_authentication_token(base_url=self.base_url) # sends a posts requests to get the auth token
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
-        #self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token) 
-        
-        
+        self.update_ips_lb()
+        #self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
-        print(self.get_current_vnfs())
-        self.update_ips_lb()
-        self.update_ips_lb()
-        self.update_ips_lb()
-        """
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
@@ -66,7 +59,7 @@ class VnfManager(Observer):
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-        """
+        
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
