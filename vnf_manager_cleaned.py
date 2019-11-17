@@ -84,6 +84,8 @@ class VnfManager(Observer):
             #self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
+        url = "ws://"+self.sdm_ip+":"+self.sdm_port
+        print("sending alert to sdm at {}".format(url))
         async with websockets.connect("ws://"+self.sdm_ip+":"+self.sdm_port) as websocket: #todo poner esta direccion de manera no hardcodding
             await websocket.send(message)
             
