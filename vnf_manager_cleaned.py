@@ -52,7 +52,7 @@ class VnfManager(Observer):
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
                 vnf_supervisor_instances[ns["vnf"]
                                          [vnf]] = vnf_supervisor_instance
-        self.set_ips(vnf_ids = vnf_ids)
+        #self.set_ips(vnf_ids = vnf_ids)
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
