@@ -36,6 +36,7 @@ class VnfManager(Observer):
         self.auth_token = auth_token
         self.update_ips_lb()
         """
+        TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
