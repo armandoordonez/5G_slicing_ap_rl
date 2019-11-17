@@ -35,6 +35,7 @@ class VnfManager(Observer):
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
         self.update_ips_lb()
+        """
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
@@ -60,7 +61,7 @@ class VnfManager(Observer):
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-        
+        """        
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
