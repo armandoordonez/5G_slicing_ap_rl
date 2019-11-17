@@ -20,6 +20,7 @@ class VnfManager(Observer):
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
         self.sdm_port = sdm_port # port of the scale decision module 
         self.sdm_ip = sdm_ip # port of the scale decision module ip
+     
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
         self.start(base_url, sdm_ip) #main loop
@@ -34,7 +35,7 @@ class VnfManager(Observer):
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
         self.update_ips_lb()
-        #self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
+        self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
