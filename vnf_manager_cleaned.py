@@ -20,7 +20,8 @@ class VnfManager(Observer):
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
         self.sdm_port = sdm_port # port of the scale decision module 
         self.sdm_ip = sdm_ip # port of the scale decision module ip
-     
+        self.cadvisor_url =  base_url+":8080/api/v1.3/subcontainers/docker"
+        self.cadvisor_url = self.cadvisor_url.replace("https","http")
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
         self.start(base_url, sdm_ip) #main loop
