@@ -34,9 +34,9 @@ class VnfManager(Observer):
         auth_token = self.get_osm_authentication_token(base_url=self.base_url) # sends a posts requests to get the auth token
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
-        self.update_ips_lb()
-        """
-        TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
+        #self.update_ips_lb()
+    
+        #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
@@ -62,7 +62,6 @@ class VnfManager(Observer):
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-        """        
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
@@ -236,7 +235,12 @@ class VnfManager(Observer):
         self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
 
-    
+    def init_docker_service(self, docker_id):
+        print("init service")
+        command = "docker exec -i "+docker_id+" nohup python3 /home/server.py >server.log 2>&1&"
+        print(command)
+        os.system(command)           
+        os.system("\n")
 
 
 if __name__ == "__main__":

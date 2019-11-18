@@ -105,7 +105,7 @@ class VnfCpuSupervisor(CpuSubject):
         print(command)
         os.system(command)           
         os.system("\n")
-
+    
     
     async def notify(self) -> None: 
         print("notifying....")
