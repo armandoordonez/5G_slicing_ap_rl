@@ -34,7 +34,7 @@ class VnfManager(Observer):
         auth_token = self.get_osm_authentication_token(base_url=self.base_url) # sends a posts requests to get the auth token
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
-        #self.update_ips_lb()
+        self.update_ips_lb()
     
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
@@ -75,14 +75,14 @@ class VnfManager(Observer):
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
             await asyncio.sleep(5)
-            self.update_ips()
+            self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])              
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
             await asyncio.sleep(5)
-            self.update_ips()
+            self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
@@ -104,21 +104,6 @@ class VnfManager(Observer):
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
-    """
-    def set_ips_in_lb(self, vnf_ids): #used at first time...
-        print("setting ips.. {}".format(len(vnf_ids)))
-        vnf_ips = []
-        only_ips = []
-        for vnf_id in vnf_ids:
-            for ip in self.get_ips_from(vnf_id):
-                only_ips.append(ip)
-        print(vnf_ips)
-        copyfile("./example.cfg", self.haproxy_cfg_name)
-        self.add_ips_to_load_balancer(only_ips)
-        self.copy_cfg_to_loadbalancer()
-        self.restart_loadbalancer()   
-
-    """
 
     def get_ips_from(self, vnf):
         only_ips = []
@@ -139,10 +124,11 @@ class VnfManager(Observer):
             for ip in self.get_ips_from(vnf):
                 ip_list.append(ip)
         print("debbugging.. ips {}".format(ip_list))
-        #time to reload the loadbalancer...
+        self.init_server_in_all_instances()
         self.add_ips_to_load_balancer(ip_list)
         self.copy_cfg_to_loadbalancer()
         self.restart_loadbalancer()
+
 
 
     def get_current_vnfs(self):
@@ -235,14 +221,23 @@ class VnfManager(Observer):
         self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
 
-    def init_docker_service(self, docker_id):
-        print("init service")
-        command = "docker exec -i "+docker_id+" nohup python3 /home/server.py >server.log 2>&1&"
-        print(command)
-        os.system(command)           
-        os.system("\n")
-
-
+    def init_server_in_all_instances(self):
+        r = requests.get(self.cadvisor_url)
+        print(self.cadvisor_url)
+        parsed_json = r.json()
+        for container in parsed_json:
+            try:            
+                for alias in container["aliases"]:
+                    if "mn"  in alias:
+                        print(alias)
+                        command = "docker exec -i "+alias+" nohup python3 /home/server.py >server.log 2>&1&"
+                        print(command)
+                        os.system(command)           
+                        os.system("\n")
+            except KeyError as e:
+                pass
+                print("catch error:{}".format(e))
+        del parsed_json
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Arguments to work with")
     parser.add_argument('--dst_ip', default="localhost", help='destination ip')

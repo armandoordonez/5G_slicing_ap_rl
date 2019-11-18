@@ -6,24 +6,19 @@ class GetAll():
         self.get_all_docker_id()
 
 
-    def get_all_docker_id(self):
+    def init_server_in_all_instances(self):
         r = requests.get(self.cadvisor_url)
         print(self.cadvisor_url)
         parsed_json = r.json()
-        #counter = 0 
         for container in parsed_json:
             try:            
                 for alias in container["aliases"]:
-                    """
-                    if self.ns_name in alias :                       
-                        if self.extract_vnf_number(container["aliases"][0]) is self.member_index and (container["aliases"][0][-1:] is "1"):
-                            self.docker_id = container["aliases"][1]
-                            self.docker_name  = container["aliases"][0]
-                            print(container["aliases"])
-                            print(container["aliases"][0][-1:])
-                        #todo implement mapping between docker_id, docker_name, vnfd, ns
-                    """
-                    print(alias)
+                    if "mn"  in alias:
+                        print(alias)
+                        command = "docker exec -i "+alias+" nohup python3 /home/server.py >server.log 2>&1&"
+                        print(command)
+                        os.system(command)           
+                        os.system("\n")
             except KeyError as e:
                 pass
                 print("catch error:{}".format(e))
