@@ -75,14 +75,14 @@ class VnfManager(Observer):
             self.print(self.TAG,"scale up")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])              
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])     
     
@@ -231,7 +231,7 @@ class VnfManager(Observer):
                 for alias in container["aliases"]:
                     if "mn"  in alias:
                         print(alias)
-                        command = "docker exec -i "+alias+" nohup python3 /home/server.py >server.log 2>&1&"
+                        command = "docker exec -i "+alias+" nohup python3 /home/server.py > /home/server.log 2>&1&"
                         print(command)
                         os.system(command)           
                         os.system("\n")

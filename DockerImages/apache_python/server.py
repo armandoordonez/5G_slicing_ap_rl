@@ -4,7 +4,7 @@ routes = web.RouteTableDef()
 @routes.get('/calculate')
 async def calculate(request):
     print("Getting request...")
-    number = 12
+    number = 35
     for _ in range(number):
         number = number * number
     return web.Response(text="Calculated..")

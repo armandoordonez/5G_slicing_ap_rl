@@ -2,6 +2,8 @@ import asyncio
 import argparse
 import aiohttp
 import logging
+from random import randint
+
 class MultipleRequest():
     def __init__(self, target_ip, target_port, clients, interval, debug, filename):
         logging.info("q parezca fiestaas")
@@ -27,14 +29,21 @@ class MultipleRequest():
     # :7079/calculate
     async def client(self, counter):
         async with aiohttp.ClientSession() as session:
-            while True:
-                self.custom_print("#{} requesting... ".format(counter))
-                html = await self.fetch(session, self.target_ip+"/calculate") #calculate....
-                self.custom_print("#{} downloading {}... ".format(counter, self.filename))
-                #await self.fetch(session, self.target_ip+"/download/"+self.filename) #download....
-                self.custom_print("#{} downloaded... ".format(counter))
-                self.custom_print("#{} response: {}".format(counter, html))
-                await asyncio.sleep(self.interval)
+            request_number = 0
+            while True:                
+                try:
+                    self.custom_print("#{} calculate... ".format(counter))
+                    html = await self.fetch(session, self.target_ip+"/calculate") #calculate....
+                    #self.custom_print("#{} downloading {}... ".format(counter, self.filename))
+                    #await self.fetch(session, self.target_ip+"/download/"+self.filename) #download....
+                    #self.custom_print("#{} downloaded... ".format(counter))
+                    self.custom_print("#{} iteration {} finished: {}".format(counter, request_number, html))
+                    await asyncio.sleep(self.interval)
+                except:
+                    self.custom_print("haproxy restarting.. ")
+                    await asyncio.sleep(5)
+                request_number += 1
+                await asyncio.sleep(randint(1,5))
 
     async def fetch(self, session, url):
         async with session.get(url) as response:

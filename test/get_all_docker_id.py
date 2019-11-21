@@ -15,7 +15,7 @@ class GetAll():
                 for alias in container["aliases"]:
                     if "mn"  in alias:
                         print(alias)
-                        command = "docker exec -i "+alias+" nohup python3 /home/server.py >server.log 2>&1&"
+                        command = "docker exec -i "+alias+" nohup python3 /home/server.py > /home/server.log 2>&1&"
                         print(command)
                         os.system(command)           
                         os.system("\n")
