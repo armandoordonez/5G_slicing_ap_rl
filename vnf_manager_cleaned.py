@@ -66,7 +66,7 @@ class VnfManager(Observer):
 
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
-        
+        wait_time = 20
         scale_decision = json.loads(scale_decision)
         self.print(self.TAG,"scale decision: {} ".format(scale_decision["scale_decision"]))
         self.print(self.TAG,type(scale_decision["scale_decision"]))
@@ -75,14 +75,19 @@ class VnfManager(Observer):
             self.print(self.TAG,"scale up")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
-            await asyncio.sleep(10)
+            self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
+            await asyncio.sleep(wait_time)
+            self.print(self.TAG, "{} seconds passed yet".format(wait_time))
             self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])              
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
             self.vnf_scale_module_instance.scale_instance(
                     ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
-            await asyncio.sleep(10)
+            self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
+            await asyncio.sleep(wait_time)
+            self.print(self.TAG, "{} seconds passed yet".format(wait_time))
+
             self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])     
     
