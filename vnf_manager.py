@@ -158,18 +158,20 @@ class VnfManager(Observer):
 
 
     async def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
-        ips  = self.osm_helper.get_vnf_current_ips(subject.vnf_id)
-        print("instances number: {}".format(len(ips[subject.vnf_id])))
+        #ips  = self.osm_helper.get_vnf_current_ips(subject.vnf_id)
+        #print("instances number: {}".format(len(ips[subject.vnf_id])))
+        #TODO make a way to get all the instances number.
+        #
         message = {
             "cpu": subject.cpu_load,
             "docker_id": subject.docker_id,
             "vnf_id": subject.vnf_id,
             "member_index": subject.member_index,
             "ns_id": subject.ns_id,
-            "number_of_vnfs": str(len(ips[subject.vnf_id]))
+            #"number_of_vnfs": str(len(ips[subject.vnf_id]))
         }        
         await self.send_alert_to_sdm(json.dumps(message))
-        self.print(self.TAG,"reacted from docker_name: {}, cpu load: {}, ns_name: {}".format(
+        self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
 
     def init_server_in_all_instances(self):
