@@ -44,7 +44,7 @@ class VnfManager(Observer):
     
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
-        ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
+        ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
@@ -144,7 +144,7 @@ class VnfManager(Observer):
 
     def get_current_vnfs(self):
         vnf_list = []
-        _, ns_vnf_dict = self.osm_helper.get_nsid_list(self.base_url, self.auth_token)
+        _, ns_vnf_dict = self.osm_helper.get_nsid_list()
         for key, ns in ns_vnf_dict.items():
             #print("type of  {}".format(type(ns["vnf"])))
             for index, vnf in ns["vnf"].items():
