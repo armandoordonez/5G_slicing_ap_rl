@@ -36,7 +36,7 @@ class VnfManager(Observer):
         #self.base_url = base_url+":9999/osm/"  # osm nbi api.
         
         #auth_token = self.get_osm_authentication_token(base_url=self.base_url) # sends a posts requests to get the auth token
-        auth_token = self.get_osm_authentication_token()
+        auth_token = self.osm_helper.get_osm_authentication_token()
 
         self.print(self.TAG,auth_token)
         self.auth_token = auth_token
