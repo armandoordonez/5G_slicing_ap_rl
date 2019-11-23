@@ -2,7 +2,6 @@ from vnf_ip_supervisor import VnfCpuSupervisor
 from osm_helper import OsmHelper
 import vnf_monitor as vnf_monitor
 import requests
-from yaml import load
 import argparse
 import urllib3
 from ObserverPattern.vnf_observer_pattern import VnfObserver as Observer

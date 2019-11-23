@@ -1,5 +1,7 @@
 import requests
 import urllib3
+from yaml import load
+
 
 class OsmHelper():
     def __init__(self, osm_url):
