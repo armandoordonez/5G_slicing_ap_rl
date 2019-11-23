@@ -23,14 +23,16 @@ class VnfManager(Observer):
         self.cadvisor_url =  base_url+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
         self.cadvisor_url = self.cadvisor_url.replace("https","http")
+        self.base_url = base_url
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
-        self.start(base_url, sdm_ip) #main loop
+        self.start( sdm_ip) #main loop
 
     def print(self, TAG, string):
         print("class: {}, {}".format(TAG, string))
         
-    def start(self, base_url, sdm_ip):
+    def start(self, sdm_ip):
+        base_url = self.base_url
         cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
         #self.base_url = base_url+":9999/osm/"  # osm nbi api.
         
