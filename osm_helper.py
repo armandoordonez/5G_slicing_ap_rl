@@ -5,7 +5,6 @@ class OsmHelper():
     def __init__(self, osm_url):
         self.base_url = osm_url
         self.auth_token = self.get_osm_authentication_token()
-        print(self.get_vnf_current_ips(1))
     
     def get_osm_authentication_token(self):
         '''
