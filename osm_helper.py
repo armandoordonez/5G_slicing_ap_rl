@@ -58,9 +58,10 @@ class OsmHelper():
         vnf_ips[vnf_id] = current_ips
         print(vnf_ips)
         return vnf_ips 
-
+"""
 if __name__ == "__main__":
     url = "https://35.184.244.20:9999/osm/"
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     OsmHelper(url)
+"""
