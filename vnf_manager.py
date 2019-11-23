@@ -44,7 +44,7 @@ class VnfManager(Observer):
     
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
-        ns_id_list, ns_vnf_list = self.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
+        ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list(base_url=self.base_url, auth_token=auth_token)
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(
             self.server_function, "localhost", 8765))
@@ -144,7 +144,7 @@ class VnfManager(Observer):
 
     def get_current_vnfs(self):
         vnf_list = []
-        _, ns_vnf_dict = self.get_nsid_list(self.base_url, self.auth_token)
+        _, ns_vnf_dict = self.osm_helper.get_nsid_list(self.base_url, self.auth_token)
         for key, ns in ns_vnf_dict.items():
             #print("type of  {}".format(type(ns["vnf"])))
             for index, vnf in ns["vnf"].items():
@@ -192,7 +192,7 @@ class VnfManager(Observer):
         print(vnf_ips)
         return vnf_ips
     """
-
+    """
     def get_nsid_list(self, base_url, auth_token):
         ns_list = []
         ns_vnf_dict = {}
@@ -218,6 +218,7 @@ class VnfManager(Observer):
         # {'network_slice_id': {'name': 'ns_name', 'vnf':{index: 'vnf_id_at_index_0'}}}
         #{'a4833c61-bc96-4b9a-b392-7e05800a7499': {'name': 'ns_name', 'vnf': {0: 'ea37c34f-6e85-46e4-a424-4cb69c0a8735', 1: '64bb6800-d23b-432f-a0c7-16a990e36492'}}}
         return ns_list, ns_vnf_dict
+    """
 
     async def updateCpuUsageSubject(self, subject: CpuSubject) -> None:
         ips  = self.osm_helper.get_vnf_current_ips(subject.vnf_id)

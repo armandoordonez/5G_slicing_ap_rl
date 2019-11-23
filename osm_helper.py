@@ -57,6 +57,33 @@ class OsmHelper():
         vnf_ips[vnf_id] = current_ips
         print(vnf_ips)
         return vnf_ips 
+
+
+    def get_nsid_list(self):
+        ns_list = []
+        ns_vnf_dict = {}
+        url = self.base_url + "nslcm/v1/ns_instances"
+        payload = ""
+        print(url)
+        headers = {
+            'Content-Type': "application/",
+            'Authorization': "Bearer " + self.auth_token,
+            'cache-control': "no-cache",
+        }
+        response_in_yaml = load(requests.request(
+            "GET", url, data=payload, headers=headers, verify=False).text)
+        for ns in response_in_yaml:
+            ns_list.append(ns["id"])
+            internal_dict = {}
+            internal_dict["name"] = ns["name"]
+            vnf_data = {}
+            for index, vnf_list in enumerate(ns["constituent-vnfr-ref"]):
+                vnf_data[index] = vnf_list
+            internal_dict["vnf"] = vnf_data
+            ns_vnf_dict[ns["id"]] = internal_dict
+        # {'network_slice_id': {'name': 'ns_name', 'vnf':{index: 'vnf_id_at_index_0'}}}
+        #{'a4833c61-bc96-4b9a-b392-7e05800a7499': {'name': 'ns_name', 'vnf': {0: 'ea37c34f-6e85-46e4-a424-4cb69c0a8735', 1: '64bb6800-d23b-432f-a0c7-16a990e36492'}}}
+        return ns_list, ns_vnf_dict
 """
 if __name__ == "__main__":
     url = "https://35.184.244.20:9999/osm/"
