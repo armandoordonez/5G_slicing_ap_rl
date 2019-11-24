@@ -34,21 +34,18 @@ class VnfManager(Observer):
         cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
         auth_token = self.osm_helper.get_osm_authentication_token()
-        self.print(self.TAG, auth_token)
         self.auth_token = auth_token
         self.update_ips_lb()
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
         ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
         loop = asyncio.get_event_loop()
-        asyncio.ensure_future(websockets.serve(
-            self.server_function, "localhost", 8765))
+        asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
         vnf_supervisor_instances = {}
         vnf_ids = []
         for key, ns in ns_vnf_list.items():
             for vnf in ns["vnf"]:
-                self.print(self.TAG,"ns name:{}".format(ns["name"]))
-                self.print(self.TAG,"vnf:{}".format(ns["vnf"][vnf]))
+                self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf]))
                 vnf_ids.append(ns["vnf"][vnf])
                 vnf_supervisor_instance = VnfCpuSupervisor(
                     cadvisor_url=cadvisor_url, base_url=self.base_url, auth_token=auth_token, vnf_id=ns["vnf"][vnf], ns_id=key, ns_name=ns["name"], member_index=vnf)
@@ -56,7 +53,6 @@ class VnfManager(Observer):
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
                 vnf_supervisor_instances[ns["vnf"]
                                          [vnf]] = vnf_supervisor_instance
-        #self.set_ips(vnf_ids = vnf_ids)
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
@@ -70,25 +66,19 @@ class VnfManager(Observer):
         scale_decision = json.loads(scale_decision)
         self.print(self.TAG,"scale decision: {} ".format(scale_decision["scale_decision"]))
         self.print(self.TAG,type(scale_decision["scale_decision"]))
-            
+        scale_order = ""
         if scale_decision["scale_decision"] is 1:
             self.print(self.TAG,"scale up")
-            self.vnf_scale_module_instance.scale_instance(
-                    ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_OUT", member_index = scale_decision["member_index"])   
-            self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
-            await asyncio.sleep(wait_time)
-            self.print(self.TAG, "{} seconds passed yet".format(wait_time))
-            self.update_ips_lb()
-            #self.update_ips(scale_decision["vnf_id"])              
+            scale_order = "SCALE_OUT"
         elif scale_decision["scale_decision"] is 0:
             self.print(self.TAG,"scale down ")
-            self.vnf_scale_module_instance.scale_instance(
-                    ns_id = scale_decision["ns_id"], scale_decision =  "SCALE_IN", member_index = scale_decision["member_index"])                 
-            self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
-            await asyncio.sleep(wait_time)
-            self.print(self.TAG, "{} seconds passed yet".format(wait_time))
-
-            self.update_ips_lb()
+            scale_order = "SCALE_IN"
+        #TODO change this to scale from docker instead of OSM 
+        self.vnf_scale_module_instance.scale_instance(ns_id = scale_decision["ns_id"], scale_decision =  scale_order, member_index = scale_decision["member_index"])                 
+        self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
+        await asyncio.sleep(wait_time)
+        self.print(self.TAG, "{} seconds passed yet".format(wait_time))
+        self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])     
     
     async def send_alert_to_sdm(self, message):
@@ -108,6 +98,7 @@ class VnfManager(Observer):
     #todo function to send to the client to update the ips of the vnfs
     # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
     
+    #TODO get ips from the dockers made
     def update_ips_lb(self): #update ips with the new ones at the load balancer
         # used on onchange _scale up or scale down
         copyfile("./example.cfg", self.haproxy_cfg_name)
@@ -208,3 +199,5 @@ if __name__ == "__main__":
 
     VnfManager(base_url=main_url, sdm_ip=sdm_ip, sdm_port = args.sdm_port)
 
+#mn.dc1_name-2-video_server-VM-1
+# docker run --name video_server --memory="256m" --cpus 1 -t -d py_server
