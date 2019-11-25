@@ -20,9 +20,8 @@ class VnfManager(Observer):
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
         self.sdm_port = sdm_port # port of the scale decision module 
         self.sdm_ip = sdm_ip # port of the scale decision module ip
-        self.cadvisor_url =  base_url+":8080/api/v1.3/subcontainers/docker"
+        self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
-        self.cadvisor_url = self.cadvisor_url.replace("https","http")
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
         self.start(sdm_ip, base_url) #main loop
@@ -42,17 +41,17 @@ class VnfManager(Observer):
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
         vnf_supervisor_instances = {}
-        vnf_ids = []
         for key, ns in ns_vnf_list.items():
             for vnf in ns["vnf"]:
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf]))
-                vnf_ids.append(ns["vnf"][vnf])
+                """
                 vnf_supervisor_instance = VnfCpuSupervisor(
                     cadvisor_url=cadvisor_url, base_url=self.base_url, auth_token=auth_token, vnf_id=ns["vnf"][vnf], ns_id=key, ns_name=ns["name"], member_index=vnf)
                 vnf_supervisor_instance.attach(self)
                 asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
                 vnf_supervisor_instances[ns["vnf"]
                                          [vnf]] = vnf_supervisor_instance
+                """
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
@@ -159,7 +158,7 @@ class VnfManager(Observer):
             "vnf_id": subject.vnf_id,
             "member_index": subject.member_index,
             "ns_id": subject.ns_id,
-            #"number_of_vnfs": str(len(ips[subject.vnf_id]))
+            #"number_of_vnfs": str(len(ips[subject.vnf_id])) TODO vnf flavor 
         }        
         await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
@@ -189,14 +188,11 @@ if __name__ == "__main__":
                         help="scale decision module ip")
     parser.add_argument('--sdm_port', default="8544",
                         help="scale decision module port")
-    
     args = parser.parse_args()
     sdm_ip = "ws://"+args.sdm_ip+":"+str(args.sdm_port)
     main_url = "https://"+args.dst_ip
     print("base_url: {}".format(main_url))
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
     VnfManager(base_url=main_url, sdm_ip=sdm_ip, sdm_port = args.sdm_port)
 
 #mn.dc1_name-2-video_server-VM-1

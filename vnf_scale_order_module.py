@@ -3,46 +3,39 @@ import asyncio
 import json 
 
 class VnfScaleModule():
-    def __init__(self, auth_token, base_url):
-        self.auth_token = auth_token
-        self.base_url = base_url
-    
-    def scale_instance(self, ns_id, scale_decision, member_index):
-        url = self.base_url + "nslcm/v1/ns_instances/"+ns_id+"/scale"
-        payload_str = {"scaleType": "SCALE_VNF","scaleVnfData":{"scaleVnfType": scale_decision,"scaleByStepData":{"scaling-group-descriptor": "scale_cirros","member-vnf-index": str(member_index)}}}
-        payload =json.dumps(payload_str)
-        print(payload)
-        headers = {
-            'Content-Type': "application/",
-            'Authorization': "Bearer "+self.auth_token,
-            'cache-control': "no-cache",
-        }        
-        response =  requests.request("POST", url, data=payload, headers=headers, verify=False)
-        print(response.text)
+    volume_dic = {"small":1, "medium":2} #TODO  set default value.
+    flavor_dic = {"single":" --cpu 1 --memory 256m ", "double":" --cpu 2 --memory 512m "}
 
-    def init_all_docker_services(self):
-        pass
-    
-    def get_docker_id(self):
-        r = requests.get(self.cadvisor_url)
-        print(self.cadvisor_url)
-        parsed_json = r.json()
-        #counter = 0 
-        print("member index: {}".format(self.member_index))
-        print()
-        for container in parsed_json:
-            try:            
-                for alias in container["aliases"]:
-                    if self.ns_name in alias :                       
-                        if self.extract_vnf_number(container["aliases"][0]) is self.member_index and (container["aliases"][0][-1:] is "1"):
-                            self.docker_id = container["aliases"][1]
-                            self.docker_name  = container["aliases"][0]
-                            print(container["aliases"])
-                            print(container["aliases"][0][-1:])
-                        #todo implement mapping between docker_id, docker_name, vnfd, ns
-            except KeyError as e:
-                pass
-                print("catch error:{}".format(e))
-        
-        del parsed_json
-        return self.docker_id, self.docker_name
+    def scale_dockers(self, vnf_id, ns_id, volume, flavor):
+        '''Scale dockers for a given vnf(and ns) with a custom flavor and number
+
+        Parameters
+        ----------
+        vnf_id: str
+            Vnf id given by osm
+        ns_id: str
+            Network slice id given by osm.
+        flavor: str single, double
+            The docker flavor you can choose between: single and double.
+            with single you obtain a container with 1 cpu and 1gb of ram,
+            with double you will get a container with 2 cpu and 2gb of ram.
+        volume: str small, medium
+            Number of dockers to deploy, small and medium are the choise \n
+            choose small if you want to get 1 container \n
+            choose medium if you want to get 2 containers \n
+        CATCH
+        ----------
+        e
+        '''
+        counter = 0 
+        image = "vlc_server"
+        for instance in range(self.volume_dic[volume]):
+            docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],counter,self.flavor_dic[flavor], image)
+            counter += 1
+            print(docker_sentence)
+
+        print(self.volume_dic["small"]) 
+
+sl = VnfScaleModule()      
+sl.scale_dockers("833306a5-411f-4d4a-bb80-d271cbdf71ff","833306a5-411f-4d4a-bb80-d271cbdf71ff","medium","double")
+

@@ -2,10 +2,12 @@ import asyncio
 import websockets
 import json
 import datetime
+import rl_module
 #todo implement interface/abstract method
 class decision_module():
     def __init__(self):
         self.vnfid_timestamps = {}
+        rl_module = module()
         self.start()
         
     def start(self):
@@ -22,7 +24,7 @@ class decision_module():
             await websocket.send(json.dumps(message))
 
 
-    async def up_server(self, websocket, path):
+    async def train_server(self, websocket, path):
         print("receiving...")
         data = await websocket.recv()
         vnf_json_data = json.loads(data)
@@ -41,13 +43,19 @@ class decision_module():
             self.vnfid_timestamps[vnf_json_data["vnf_id"]] = datetime.datetime.now()   
         else:
             print("discarting message...")
+        rl_module.train(data)
+    
+    async def inference_server(self, websocket, path):
+        
+        pass
 
     async def scale_decision(self, message):
         await asyncio.sleep(3) 
         message["scale_decision"] = 1
         return message
         
-
+#    async def scale_module(self, cpu, docker_id, ns_id, vnf_id, flavor_type, current_instance_number):
+#        pass
 
 if __name__ == "__main__":
     decision_module()

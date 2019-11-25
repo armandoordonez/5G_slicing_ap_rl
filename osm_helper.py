@@ -39,7 +39,7 @@ class OsmHelper():
 
         Returns
         ----------
-        vnfs ips
+        vnfs ips: array
             An array with the ips. 
         '''
         url = self.base_url + "nslcm/v1/vnf_instances/"+vnf_id
