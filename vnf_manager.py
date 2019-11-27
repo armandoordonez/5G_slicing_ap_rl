@@ -12,6 +12,7 @@ import json
 from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
+from vnf_scale_order_module import VnfScaleModule
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
@@ -22,6 +23,7 @@ class VnfManager(Observer):
         self.sdm_ip = sdm_ip # port of the scale decision module ip
         self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
+        self.vnf_scale_module = VnfScaleModule()
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
         self.start(sdm_ip, base_url) #main loop
@@ -44,14 +46,10 @@ class VnfManager(Observer):
         for key, ns in ns_vnf_list.items():
             for vnf in ns["vnf"]:
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf]))
-                """
-                vnf_supervisor_instance = VnfCpuSupervisor(
-                    cadvisor_url=cadvisor_url, base_url=self.base_url, auth_token=auth_token, vnf_id=ns["vnf"][vnf], ns_id=key, ns_name=ns["name"], member_index=vnf)
-                vnf_supervisor_instance.attach(self)
-                asyncio.ensure_future(vnf_supervisor_instance.check_ip_loop())
-                vnf_supervisor_instances[ns["vnf"]
-                                         [vnf]] = vnf_supervisor_instance
-                """
+                self.vnf_scale_module.scale_down_dockers(ns["vnf"][vnf], key)
+                self.vnf_scale_module.scale_up_dockers(ns["vnf"][vnf], key, "small", single)
+
+    
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
