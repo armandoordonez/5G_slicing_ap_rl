@@ -19,22 +19,41 @@ class DockerSupervisor(CpuSubject):
         self.cpu_load = None
         self.rx_usage = None
         self.tx_usage = None
-        docker_id = self.get_docker_id(self.cadvisor_url, docker_name)
+        self.c_tx = None
+        self.c_rx = None
+        docker_id = self.get_docker_id(docker_name)
         print(docker_id)
         self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id[-4:], ns_id[-4:], index, sampling_time)
 
-    def get_docker_id(self, cadvisor_url, docker_name):
+    def get_docker_id(self, docker_name):
+        cadvisor_url = self.cadvisor_url
         r = requests.get(cadvisor_url)
         parsed_json = r.json()
         print(docker_name)
         for container in parsed_json:
             try:
                 if container["aliases"][0] == docker_name:
-                    print("found!")
+                    print("docker id found!")
                     return container["aliases"][1]
             except KeyError:
                 print("key error: aliases")
         return "docker id not found!"
+    def get_docker_names(self):
+        #TODO working on this 
+        cadvisor_url = self.cadvisor_url
+        r = requests.get(cadvisor_url)
+        parsed_json = r.json()
+        docker_names = []
+        for container in parsed_json:
+            try:
+                if "mn._scale_." in container["aliases"][0]:
+                    print("name found!")
+                    print(container["aliases"][0])
+                    docker_names.push(container["aliases"][0])
+            except KeyError:
+                print("key error: aliases")
+        
+
 
     async def check_docker_loop(self):
         print("check cpu loop..{}".format(self.docker_instance.name))
@@ -48,22 +67,26 @@ class DockerSupervisor(CpuSubject):
 
     def get_current_usage_stats(self):
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
-        print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
+        #print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
         parsed_json = r.json()
         cpu_percentage = 0
         count = 0
         final_cpu  = parsed_json["stats"][-1:][0]["cpu"]["usage"]["total"]
         initial_cpu = parsed_json["stats"][-2:-1][0]["cpu"]["usage"]["total"]
         final_rx =  parsed_json["stats"][-1:][0]["network"]["rx_bytes"]
-        initial_rx = parsed_json["stats"][-3:-2][0]["network"]["rx_bytes"]
         final_tx =  parsed_json["stats"][-1:][0]["network"]["tx_bytes"]
-        initial_tx = parsed_json["stats"][-3:-2][0]["network"]["tx_bytes"]
         print(parsed_json["stats"][-2:-1][0]["network"]["rx_bytes"])
         final_date = self.parse_datetime(parsed_json["stats"][-1:][0]["timestamp"])
         initial_date = self.parse_datetime(parsed_json["stats"][-2:-1][0]["timestamp"])
-        rx_usage = final_rx - initial_rx
-        tx_usage = final_tx - initial_tx
-        print("initial rx {} final rx {} ".format(initial_rx, final_rx))
+        if self.c_rx == None:
+            self.c_rx = final_rx
+        if self.c_tx == None:
+            self.c_tx = final_rx    
+        rx_usage = final_rx - self.c_rx
+        tx_usage = final_tx - self.c_tx
+        self.c_rx = final_rx
+        self.c_tx = final_tx
+        print("initial rx {} final rx {} ".format(self.c_rx, final_rx))
         cpu_percentage = self.calculate_cpu_percentage(initial_cpu = initial_cpu, final_cpu = final_cpu, initial_date =initial_date, final_date = final_date)    
         return cpu_percentage, rx_usage, tx_usage
 
@@ -76,18 +99,21 @@ class DockerSupervisor(CpuSubject):
         return maya.parse(date).datetime()
 
     def attach(self, observer):
-
-        pass
+        print("{} subject: Attached to an observer".format(self.vnf_id))
+        self._observers = observer
+        
     
     def detach(self, detach):
-        pass
+        print("subject: Remove  an observer")
+        self._observers = None
     
-    def notify(self):
-        pass
+    async def notify(self):
+        await self._observers.updateCpuUsageSubject()
 
 
-insta = DockerSupervisor("http://34.67.226.47:8080/api/","abcd","abcd",1, 5)
-loop = asyncio.get_event_loop()
-loop.run_until_complete(insta.check_docker_loop())
-loop.close()
-print(insta.get_current_cpu_usage())
+insta = DockerSupervisor("http://104.154.95.6:8080/api/","abcd","abcd",1, 1)
+#loop = asyncio.get_event_loop()
+#loop.run_until_complete(insta.check_docker_loop())
+#loop.close()
+#print(insta.get_current_cpu_usage())
+insta.get_docker_names()

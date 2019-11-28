@@ -5,6 +5,8 @@ import asyncio, maya
 import math
 import os
 from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
+
+
 class VnfCpuSupervisor(CpuSubject):
     _current_ips: [] = None
     _current_cpu_load = None 

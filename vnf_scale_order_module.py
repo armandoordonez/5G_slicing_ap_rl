@@ -32,14 +32,16 @@ class VnfScaleModule():
         image = "vlc_server"
         try:
             for instance in range(self.volume_dic[volume]):
-                docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],counter,self.flavor_dic[flavor], image)
+                identifier = "{}{}{}".format(flavor, volume, counter)
+                docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],identifier, self.flavor_dic[flavor], image)
                 counter += 1
                 #print(docker_sentence)
                 self.exec_in_os(docker_sentence)
             print(self.volume_dic["small"]) 
         except KeyError:
             print("Key error, creating lowest scale  docker..") 
-            docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],counter,self.flavor_dic["single"], image)
+            identifier = "ss0"
+            docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],identifier,self.flavor_dic["single"], image)
             self.exec_in_os(docker_sentence)
     
     def scale_down_dockers(self, vnf_id, ns_id):
