@@ -53,9 +53,9 @@ class VnfScaleModule():
     def scale_down_dockers(self,cadvisor_url , vnf_id, ns_id):
         docker_names = self.get_docker_names(cadvisor_url, ns_id, vnf_id)
         for docker in docker_names:
-            docker_sentence = "docker stop  {}".format(docker)
+            docker_sentence = "docker container stop  {}".format(docker)
             self.exec_in_os(docker_sentence)
-            docker_sentence = "docker rm  {} ".format(docker)
+            docker_sentence = "docker container rm  {} ".format(docker)
             self.exec_in_os(docker_sentence)
 
 
@@ -65,6 +65,7 @@ class VnfScaleModule():
         parsed_json = r.json()
         docker_names = []
         docker_name = "mn._scale_.{}.{}".format(ns_id[-4:], vnf_id[-4:])
+        print("searching for docker names like{}...".format(docker_name))
 
         for container in parsed_json:
             try:
