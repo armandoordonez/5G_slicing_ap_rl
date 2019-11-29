@@ -37,7 +37,7 @@ class VnfScaleModule():
         e
         '''
         counter = 0 
-        image = "py_serv"
+        image = "py_server"
         try:
             for instance in range(self.volume_dic[volume]):
                 identifier = "{}{}{}".format(flavor[0], volume[0], counter)
