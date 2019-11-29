@@ -50,8 +50,8 @@ class VnfScaleModule():
             docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],identifier,self.flavor_dic["single"], image)
             self.exec_in_os(docker_sentence)
     
-    def scale_down_dockers(self, vnf_id, ns_id):
-        docker_names = self.get_docker_names(ns_id, vnf_id)
+    def scale_down_dockers(self,cadvisor_url , vnf_id, ns_id):
+        docker_names = self.get_docker_names(cadvisor_url, ns_id, vnf_id)
         for docker in docker_names:
             docker_sentence = "docker stop container {}".format(docker)
             self.exec_in_os(docker_sentence)
@@ -59,19 +59,19 @@ class VnfScaleModule():
             self.exec_in_os(docker_sentence)
 
 
-    def get_docker_names(self, ns_id, vnf_id):
+    def get_docker_names(self, cadvisor_url, ns_id, vnf_id):
         #TODO working on this 
-        cadvisor_url = self.cadvisor_url
         r = requests.get(cadvisor_url)
         parsed_json = r.json()
         docker_names = []
+        docker_name = "mn._scale_.{}.{}".format(ns_id[-4:], vnf_id[-4:])
+
         for container in parsed_json:
             try:
-                docker_name = "mn._scale_.{}.{}".format(ns_id, vnf_id)
                 if docker_name in container["aliases"][0]:
                     print("name found!")
                     print(container["aliases"][0])
-                    docker_names.push(container["aliases"][0])
+                    docker_names.append(container["aliases"][0])
             except KeyError:
                 print("key error: aliases")
         return docker_names
@@ -93,5 +93,5 @@ class VnfScaleModule():
         
 sl = VnfScaleModule()      
 #sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
-sl.scale_down_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68") #, "medium", "double") #,"medisum","double")
+sl.scale_down_dockers("http://34.69.148.248:8080/api/v1.3/subcontainers/docker","c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68") #, "medium", "double") #,"medisum","double")
 
