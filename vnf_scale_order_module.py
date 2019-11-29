@@ -3,6 +3,14 @@ import asyncio
 import json 
 import os
 class VnfScaleModule():
+    ''' VNF Scale Docker module
+    With this module you can scale up and down VNFs. The container names has the format: \n
+    
+    Identifier is composed by the first letter of vnf_id + ns_id and the number of the container \n
+    mn._ scale _.{ns_id[-4:]}.{vnf_id[-4:]}.{identifier} \n
+
+
+    '''
     
     volume_dic = {"small":1, "medium":2} #TODO  set default value.
     flavor_dic = {"single":" --cpus 1 --memory 256m ", "double":" --cpus 2 --memory 512m "}
@@ -29,15 +37,13 @@ class VnfScaleModule():
         e
         '''
         counter = 0 
-        image = "vlc_server"
+        image = "py_serv"
         try:
             for instance in range(self.volume_dic[volume]):
-                identifier = "{}{}{}".format(flavor, volume, counter)
+                identifier = "{}{}{}".format(flavor[0], volume[0], counter)
                 docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],identifier, self.flavor_dic[flavor], image)
                 counter += 1
-                #print(docker_sentence)
                 self.exec_in_os(docker_sentence)
-            print(self.volume_dic["small"]) 
         except KeyError:
             print("Key error, creating lowest scale  docker..") 
             identifier = "ss0"
@@ -45,14 +51,31 @@ class VnfScaleModule():
             self.exec_in_os(docker_sentence)
     
     def scale_down_dockers(self, vnf_id, ns_id):
-        for docker in range(self.volume_dic["medium"]):
-            docker_sentence = "docker stop container mn._scale_.{}.{}.{} ".format(ns_id[-4:],vnf_id[-4:], docker)
+        docker_names = self.get_docker_names(ns_id, vnf_id)
+        for docker in docker_names:
+            docker_sentence = "docker stop container {}".format(docker)
             self.exec_in_os(docker_sentence)
-            docker_sentence = "docker rm container mn._scale_.{}.{}.{} ".format(ns_id[-4:],vnf_id[-4:], docker)
+            docker_sentence = "docker rm container {} ".format(docker)
             self.exec_in_os(docker_sentence)
 
 
-
+    def get_docker_names(self, ns_id, vnf_id):
+        #TODO working on this 
+        cadvisor_url = self.cadvisor_url
+        r = requests.get(cadvisor_url)
+        parsed_json = r.json()
+        docker_names = []
+        for container in parsed_json:
+            try:
+                docker_name = "mn._scale_.{}.{}".format(ns_id, vnf_id)
+                if docker_name in container["aliases"][0]:
+                    print("name found!")
+                    print(container["aliases"][0])
+                    docker_names.push(container["aliases"][0])
+            except KeyError:
+                print("key error: aliases")
+        return docker_names
+        
 
     def exec_in_os(self, command):
         '''Execute command in OS bash
@@ -69,5 +92,5 @@ class VnfScaleModule():
 
         
 sl = VnfScaleModule()      
-sl.scale_down_dockers("833306a5-411f-4d4a-bb80-d271cbdf71ff","833306a5-411f-4d4a-bb80-d271cbdf71ff") #,"medisum","double")
+sl.scale_up_dockers("5bad096b-2ff2-43be-9e4b-a7d7a25d4399","a81ea242-eb3c-4758-8e7e-a3497db6b5fd", "medium", "double") #,"medisum","double")
 

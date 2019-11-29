@@ -38,21 +38,7 @@ class DockerSupervisor(CpuSubject):
             except KeyError:
                 print("key error: aliases")
         return "docker id not found!"
-    def get_docker_names(self):
-        #TODO working on this 
-        cadvisor_url = self.cadvisor_url
-        r = requests.get(cadvisor_url)
-        parsed_json = r.json()
-        docker_names = []
-        for container in parsed_json:
-            try:
-                if "mn._scale_." in container["aliases"][0]:
-                    print("name found!")
-                    print(container["aliases"][0])
-                    docker_names.push(container["aliases"][0])
-            except KeyError:
-                print("key error: aliases")
-        
+
 
 
     async def check_docker_loop(self):
@@ -111,9 +97,9 @@ class DockerSupervisor(CpuSubject):
         await self._observers.updateCpuUsageSubject()
 
 
-insta = DockerSupervisor("http://104.154.95.6:8080/api/","abcd","abcd",1, 1)
+insta = DockerSupervisor("http://34.69.148.248:8080/api/","abcd","abcd",1, 1)
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(insta.check_docker_loop())
 #loop.close()
 #print(insta.get_current_cpu_usage())
-insta.get_docker_names()
+#insta.get_docker_names()
