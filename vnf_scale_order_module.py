@@ -92,5 +92,5 @@ class VnfScaleModule():
 
         
 sl = VnfScaleModule()      
-sl.scale_up_dockers("5bad096b-2ff2-43be-9e4b-a7d7a25d4399","a81ea242-eb3c-4758-8e7e-a3497db6b5fd", "medium", "double") #,"medisum","double")
+sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
 
