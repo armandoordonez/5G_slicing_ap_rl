@@ -93,6 +93,6 @@ class VnfScaleModule():
 
         
 sl = VnfScaleModule()      
-sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
-#sl.scale_down_dockers("http://34.69.148.248:8080/api/v1.3/subcontainers/docker","c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68") #, "medium", "double") #,"medisum","double")
+#sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
+sl.scale_down_dockers("http://34.69.148.248:8080/api/v1.3/subcontainers/docker","c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68") #, "medium", "double") #,"medisum","double")
 
