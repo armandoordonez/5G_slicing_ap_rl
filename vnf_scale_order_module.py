@@ -53,9 +53,9 @@ class VnfScaleModule():
     def scale_down_dockers(self,cadvisor_url , vnf_id, ns_id):
         docker_names = self.get_docker_names(cadvisor_url, ns_id, vnf_id)
         for docker in docker_names:
-            docker_sentence = "docker stop container {}".format(docker)
+            docker_sentence = "docker stop  {}".format(docker)
             self.exec_in_os(docker_sentence)
-            docker_sentence = "docker rm container {} ".format(docker)
+            docker_sentence = "docker rm  {} ".format(docker)
             self.exec_in_os(docker_sentence)
 
 
