@@ -85,7 +85,7 @@ class DockerSupervisor(CpuSubject):
         return maya.parse(date).datetime()
 
     def attach(self, observer):
-        print("{} subject: Attached to an observer".format(self.vnf_id))
+        print("{} subject: Attached to an observer".format(self.docker_instance.vnf_id[:5]))
         self._observers = observer
         
     
