@@ -97,7 +97,6 @@ class DockerSupervisor(CpuSubject):
         await self._observers.updateCpuUsageSubject()
 
 
-insta = DockerSupervisor("http://34.69.148.248:8080/api/","abcd","abcd",1, 1)
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(insta.check_docker_loop())
 #loop.close()
