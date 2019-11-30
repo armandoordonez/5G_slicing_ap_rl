@@ -13,8 +13,8 @@ class DockerSupervisor(CpuSubject):
     def __init__(self, cadvisor_url, ns_id, vnf_id, index, sampling_time):
         #docker_name = "mn._scale_.{}.{}.{}".format(ns_id, vnf_id,index)
         docker_name = "py_serv"
-        self.cadvisor_url = cadvisor_url + "v1.3/subcontainers/docker"
-        self.cadvisor_url_cpu = cadvisor_url + "v1.0/containers/docker"
+        self.cadvisor_url = cadvisor_url 
+        self.cadvisor_url_cpu = cadvisor_url.replace("v1.3/subcontainers/docker", "v1.0/containers/docker")
         self.nano_secs = math.pow(10, 9)
         self.cpu_load = None
         self.rx_usage = None

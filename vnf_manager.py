@@ -22,7 +22,7 @@ class VnfManager(Observer):
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
         self.sdm_port = sdm_port # port of the scale decision module 
         self.sdm_ip = sdm_ip # port of the scale decision module ip
-        self.cadvisor_url =  base_url.replace("https","http")+":8080/api/"
+        self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
         self.vnf_scale_module = VnfScaleModule()
         print(self.TAG,"init")
