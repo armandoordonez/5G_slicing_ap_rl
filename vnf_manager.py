@@ -12,8 +12,9 @@ import json
 from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
-from vnf_scale_order_module import VnfScaleModule
+from docker_supervisor import DockerSupervisor
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
+#TODO create a propieties file to avoid the hard coding "" in scale decisions. enumerate?
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
@@ -38,7 +39,6 @@ class VnfManager(Observer):
         self.auth_token = auth_token
         self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
-        self.vnf_scale_module_instance = VnfScaleModule()
         ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
@@ -46,13 +46,11 @@ class VnfManager(Observer):
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index, vnf_id in ns["vnf"].items():
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns_id, vnf_id))
-                print(type(ns["vnf"]))
-                print(vnf_id)
-                #self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, )
-                #self.vnf_scale_module.scale_down_dockers(ns["vnf"][vnf], key)
-                #self.vnf_scale_module.scale_up_dockers(ns["vnf"][vnf], key, "small", single)
-
-    
+                self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
+                self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, "single", "small") 
+                supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5)
+                supervisor.attach(self)
+                asyncio.ensure_future(supervisor.check_docker_loop())   
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():

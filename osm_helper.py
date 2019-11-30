@@ -62,6 +62,15 @@ class OsmHelper():
 
 
     def get_nsid_list(self):
+        ''' Get all the Network Slices and their associates vnfs
+        Returns
+        ----------
+        ns_list: array
+
+        
+        ns_vnf_dict: dict
+        {'network_slice_id'-> {'name'  -> : 'ns_name', 'vnf' -> {index: -> 'vnf_id_at_index_0'}}}
+        '''
         ns_list = []
         ns_vnf_dict = {}
         url = self.base_url + "nslcm/v1/ns_instances"
