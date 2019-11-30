@@ -11,7 +11,7 @@ class DockerSupervisor(CpuSubject):
     _state = None
 
     def __init__(self, cadvisor_url, ns_id, vnf_id, index, sampling_time, volume, flavor):
-        identifier "{}{}{}".format(flavor[0], volume[0], 0)
+        identifier =  "{}{}{}".format(flavor[0], volume[0], 0)
         docker_name = "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
         #docker_name = "py_serv"
         self.cadvisor_url = cadvisor_url 
