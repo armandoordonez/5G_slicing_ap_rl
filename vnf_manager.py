@@ -48,6 +48,7 @@ class VnfManager(Observer):
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns_id, vnf_id))
                 flavor = "single"
                 volume = "small"
+                #TODO meter esto dentro de una funcion para que cada vez que quede facil conectar y desconectar los supervisores 
                 self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
                 self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
                 supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5, volume, flavor)
