@@ -46,9 +46,11 @@ class VnfManager(Observer):
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index, vnf_id in ns["vnf"].items():
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns_id, vnf_id))
+                flavor = "single"
+                volume = "small"
                 self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
-                self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, "single", "small") 
-                supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5)
+                self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
+                supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5, volume, flavor)
                 supervisor.attach(self)
                 asyncio.ensure_future(supervisor.check_docker_loop())   
         pending = asyncio.Task.all_tasks()  # allow end the last task!

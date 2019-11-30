@@ -3,16 +3,17 @@ import time
 from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
 import collections
 import asyncio, maya, math
-DockerInstance = collections.namedtuple('DockerInstance', ('name','docker_id','vnf_id','ns_id','index', 'sampling_time')) 
+DockerInstance = collections.namedtuple('DockerInstance', ('name','docker_id','vnf_id','ns_id','index', 'sampling_time', 'volume', 'flavor')) 
 #TODO hacer refactor con las constantes en unas sola clase.
 #TODO hacer una maquina de estado
 class DockerSupervisor(CpuSubject):
     _observers = None
     _state = None
 
-    def __init__(self, cadvisor_url, ns_id, vnf_id, index, sampling_time):
-        #docker_name = "mn._scale_.{}.{}.{}".format(ns_id, vnf_id,index)
-        docker_name = "py_serv"
+    def __init__(self, cadvisor_url, ns_id, vnf_id, index, sampling_time, volume, flavor):
+        identifier "{}{}{}".format(flavor[0], volume[0], 0)
+        docker_name = "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
+        #docker_name = "py_serv"
         self.cadvisor_url = cadvisor_url 
         self.cadvisor_url_cpu = cadvisor_url.replace("v1.3/subcontainers/docker", "v1.0/containers/docker")
         self.nano_secs = math.pow(10, 9)
@@ -23,7 +24,7 @@ class DockerSupervisor(CpuSubject):
         self.c_rx = None
         docker_id = self.get_docker_id(docker_name)
         print(docker_id)
-        self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id[-4:], ns_id[-4:], index, sampling_time)
+        self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id[-4:], ns_id[-4:], index, sampling_time, volume, flavor)
 
     def get_docker_id(self, docker_name):
         cadvisor_url = self.cadvisor_url
