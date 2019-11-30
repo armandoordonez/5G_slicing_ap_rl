@@ -46,7 +46,7 @@ class VnfManager(Observer):
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index in ns["vnf"]:
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf_index]))
-                print(type(vnf_index))
+                print(type(ns["vnf"]))
                 #self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, )
                 #self.vnf_scale_module.scale_down_dockers(ns["vnf"][vnf], key)
                 #self.vnf_scale_module.scale_up_dockers(ns["vnf"][vnf], key, "small", single)
