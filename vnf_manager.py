@@ -32,22 +32,24 @@ class VnfManager(Observer):
         print("class: {}, {}".format(TAG, string))
         
     def start(self, sdm_ip, base_url):        
-        cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
+        #cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
         auth_token = self.osm_helper.get_osm_authentication_token()
         self.auth_token = auth_token
-        self.update_ips_lb()
+        self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
-        self.vnf_scale_module_instance = VnfScaleModule(base_url = self.base_url, auth_token=auth_token)         
+        self.vnf_scale_module_instance = VnfScaleModule()
         ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
         vnf_supervisor_instances = {}
-        for key, ns in ns_vnf_list.items():
-            for vnf in ns["vnf"]:
-                self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf]))
-                self.vnf_scale_module.scale_down_dockers(ns["vnf"][vnf], key)
-                self.vnf_scale_module.scale_up_dockers(ns["vnf"][vnf], key, "small", single)
+        for ns_id, ns in ns_vnf_list.items():
+            for vnf_index in ns["vnf"]:
+                self.print(self.TAG,"ns name:{} vnf:{}".format(ns["name"],ns["vnf"][vnf_index]))
+                print(type(vnf_index))
+                #self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, )
+                #self.vnf_scale_module.scale_down_dockers(ns["vnf"][vnf], key)
+                #self.vnf_scale_module.scale_up_dockers(ns["vnf"][vnf], key, "small", single)
 
     
         pending = asyncio.Task.all_tasks()  # allow end the last task!
