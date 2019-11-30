@@ -52,6 +52,8 @@ class DockerSupervisor(CpuSubject):
 
 
     def get_current_usage_stats(self):
+        print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
+
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
         #print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
         parsed_json = r.json()
@@ -99,6 +101,7 @@ class DockerSupervisor(CpuSubject):
 
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(insta.check_docker_loop())
+
 #loop.close()
 #print(insta.get_current_cpu_usage())
 #insta.get_docker_names()
