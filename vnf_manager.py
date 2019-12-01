@@ -203,8 +203,8 @@ class VnfManager(Observer):
         }        
         await self.send_alert_to_sdm(json.dumps(message))
         
-        self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
-            subject.docker_name, subject.cpu_load, subject.ns_name))
+        #self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
+        #    subject.docker_name, subject.cpu_load, subject.ns_name))
         
 
 
