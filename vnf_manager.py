@@ -68,7 +68,7 @@ class VnfManager(Observer):
                 supervisor = self.scale_process(message)
                 asyncio.ensure_future(supervisor.check_docker_loop())   
         pending = asyncio.Task.all_tasks()  # allow end the last task!
-        print("main, pending tasks{}".format(pending))
+        print("main, pending tasks{}".format(len(pending)))
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
