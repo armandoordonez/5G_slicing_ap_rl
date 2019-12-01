@@ -100,7 +100,7 @@ class DockerSupervisor(CpuSubject):
         self._observers = None
     
     async def notify(self):
-        await self._observers.updateCpuUsageSubject()
+        await self._observers.updateCpuUsageSubject(self)
 
 
 #loop = asyncio.get_event_loop()
