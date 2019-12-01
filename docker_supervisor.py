@@ -47,7 +47,6 @@ class DockerSupervisor(CpuSubject):
         try:
             while True:
                 if self.docker_instance.docker_id is not None:
-                    
                     await asyncio.sleep(self.docker_instance.sampling_time)
                     self.cpu, self.rx_usage, self.tx_usage = self.get_current_usage_stats()
                     print("cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu, self.tx_usage, self.rx_usage, self.docker_instance.name))
