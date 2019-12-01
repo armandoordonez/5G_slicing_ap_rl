@@ -13,6 +13,7 @@ from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
 from docker_supervisor import DockerSupervisor
+import keys
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO create a propieties file to avoid the hard coding "" in scale decisions. enumerate?
 class VnfManager(Observer):
@@ -24,6 +25,7 @@ class VnfManager(Observer):
         self.sdm_ip = sdm_ip # port of the scale decision module ip
         self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
+        self.keys = Keys()
         self.vnf_scale_module = VnfScaleModule()
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
@@ -60,7 +62,7 @@ class VnfManager(Observer):
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-
+    """
     async def server_function(self, websocket, path):
         scale_decision = await websocket.recv()
         wait_time = 20
@@ -81,7 +83,26 @@ class VnfManager(Observer):
         self.print(self.TAG, "{} seconds passed yet".format(wait_time))
         self.update_ips_lb()
             #self.update_ips(scale_decision["vnf_id"])     
-    
+    """
+    async def server_function(self, websockets, path):
+        message = await websocket.recv()
+        message = json.loads(message)
+        print("message from sdm: {}".format(message))
+
+    def scale_process(self, message):
+        flavor = message[self.keys.flavor]
+        volume = message[self.keys.volume]
+        ns_id = message[self.keys.ns_id]
+        vnf_id = message[self.keys.vnf_id]
+        vnf_index = message[self.keys.vnf_index]
+        sampling_time =  message[self.keys.sampling_time]
+        self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
+        self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
+        supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
+        supervisor.attach(self)
+        return supervisor
+        
+
     async def send_alert_to_sdm(self, message):
         url = self.sdm_ip
         print("sending alert to sdm at {}".format(url))
@@ -154,6 +175,7 @@ class VnfManager(Observer):
         #print("instances number: {}".format(len(ips[subject.vnf_id])))
         #TODO make a way to get all the instances number.
         #
+        """
         message = {
             "cpu": subject.cpu_load,
             "docker_id": subject.docker_id,
@@ -165,6 +187,10 @@ class VnfManager(Observer):
         await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
+        """
+        loop = asyncio.get_event_loop()
+        loop.stop()
+        print("loop stopped")
 
     def init_server_in_all_instances(self):
         r = requests.get(self.cadvisor_url)
