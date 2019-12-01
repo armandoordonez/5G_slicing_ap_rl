@@ -15,7 +15,7 @@ import os
 from docker_supervisor import DockerSupervisor
 import keys
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
-#TODO create a propieties file to avoid the hard coding "" in scale decisions. enumerate?
+#TODO Cancel event loop.
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
@@ -88,10 +88,20 @@ class VnfManager(Observer):
         message = await websocket.recv()
         message = json.loads(message)
         print("message from sdm: {}".format(message))
-        loop = asyncio.get_event_loop()
-        loop.stop()
+        await cancel_all_supervisor_task()
         print("loop stopped")
 
+    async def cancel_all_supervisor_task(self):
+        print("cancelling all supervisor task ")
+        pending = asyncio.Task.all_tasks()
+        print(type(pending))
+        for task in pending:
+            print(type(task))
+            print(str(task))
+            if "check_docker_loop" in str(str(task)):
+                print("docker loop") 
+                task.cancel()
+        
     def scale_process(self, message):
         flavor = message[self.keys.flavor]
         volume = message[self.keys.volume]
