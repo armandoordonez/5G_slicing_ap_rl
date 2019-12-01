@@ -85,7 +85,7 @@ class VnfManager(Observer):
             #self.update_ips(scale_decision["vnf_id"])     
     """
     async def server_function(self, websockets, path):
-        message = await websocket.recv()
+        message = await websockets.recv()
         message = json.loads(message)
         print("message from sdm: {}".format(message))
         await cancel_all_supervisor_task()
