@@ -88,7 +88,7 @@ class VnfManager(Observer):
         message = await websockets.recv()
         message = json.loads(message)
         print("message from sdm: {}".format(message))
-        await cancel_all_supervisor_task()
+        await self.cancel_all_supervisor_task()
         print("loop stopped")
 
     async def cancel_all_supervisor_task(self):
