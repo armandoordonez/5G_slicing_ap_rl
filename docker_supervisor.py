@@ -50,7 +50,7 @@ class DockerSupervisor(CpuSubject):
                     await asyncio.sleep(self.docker_instance.sampling_time)
                     self.cpu, self.rx_usage, self.tx_usage = self.get_current_usage_stats()
                     print("cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu, self.tx_usage, self.rx_usage, self.docker_instance.name))
-                    #await self.notify()
+                    await self.notify()
         except asyncio.CancelledError as e:
             print("Task cancelled!")
 
