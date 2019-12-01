@@ -88,6 +88,9 @@ class VnfManager(Observer):
         message = await websocket.recv()
         message = json.loads(message)
         print("message from sdm: {}".format(message))
+        loop = asyncio.get_event_loop()
+        loop.stop()
+        print("loop stopped")
 
     def scale_process(self, message):
         flavor = message[self.keys.flavor]
@@ -175,7 +178,7 @@ class VnfManager(Observer):
         #print("instances number: {}".format(len(ips[subject.vnf_id])))
         #TODO make a way to get all the instances number.
         #
-        """
+        
         message = {
             "cpu": subject.cpu_load,
             "docker_id": subject.docker_id,
@@ -187,10 +190,8 @@ class VnfManager(Observer):
         await self.send_alert_to_sdm(json.dumps(message))
         self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
             subject.docker_name, subject.cpu_load, subject.ns_name))
-        """
-        loop = asyncio.get_event_loop()
-        loop.stop()
-        print("loop stopped")
+        
+
 
     def init_server_in_all_instances(self):
         r = requests.get(self.cadvisor_url)
