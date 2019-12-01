@@ -56,7 +56,7 @@ class DockerSupervisor(CpuSubject):
 
 
     def get_current_usage_stats(self):
-        print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
+        #print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
 
         r = requests.get(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
         #print(self.cadvisor_url_cpu+"/"+self.docker_instance.docker_id)
