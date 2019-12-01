@@ -13,7 +13,7 @@ from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
 from docker_supervisor import DockerSupervisor
-import keys
+import keys as keys
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO Cancel event loop.
 class VnfManager(Observer):
@@ -25,7 +25,7 @@ class VnfManager(Observer):
         self.sdm_ip = sdm_ip # port of the scale decision module ip
         self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
-        self.keys = Keys()
+        self.keys = keys.Keys()
         self.vnf_scale_module = VnfScaleModule()
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
