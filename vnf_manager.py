@@ -48,6 +48,7 @@ class VnfManager(Observer):
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index, vnf_id in ns["vnf"].items():
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns_id, vnf_id))
+                """
                 flavor = "single"
                 volume = "small"
                 #TODO meter esto dentro de una funcion para que cada vez que quede facil conectar y desconectar los supervisores 
@@ -55,6 +56,16 @@ class VnfManager(Observer):
                 self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
                 supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5, volume, flavor)
                 supervisor.attach(self)
+                """
+                message = {
+                    self.keys.flavor: "single", 
+                    self.keys.volume: "small",
+                    self.keys.ns_id: ns_id,
+                    self.keys.vnf_id: vnf_id,
+                    self.keys.vnf_index: vnf_index,
+                    self.keys.sampling_time: 5,
+                }
+                supervisor = self.scale_process(message)
                 asyncio.ensure_future(supervisor.check_docker_loop())   
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         print("main, pending tasks{}".format(pending))
@@ -121,6 +132,7 @@ class VnfManager(Observer):
                 task.cancel()
         
     def scale_process(self, message):
+        print("scaling process")
         flavor = message[self.keys.flavor]
         volume = message[self.keys.volume]
         ns_id = message[self.keys.ns_id]
