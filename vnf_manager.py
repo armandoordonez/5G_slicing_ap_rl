@@ -57,6 +57,7 @@ class VnfManager(Observer):
                 supervisor.attach(self)
                 asyncio.ensure_future(supervisor.check_docker_loop())   
         pending = asyncio.Task.all_tasks()  # allow end the last task!
+        print("main, pending tasks{}".format(pending))
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
@@ -90,14 +91,31 @@ class VnfManager(Observer):
         print("message from sdm: {}".format(message))
         await self.cancel_all_supervisor_task()
         print("loop stopped")
+        print("generating new dockers..")
+        message = {
+            self.keys.flavor: "single", 
+            self.keys.volume: "small",
+            self.keys.ns_id: "7f38dede-9ea2-4616-b37f-492242883113",
+            self.keys.vnf_id "708083af-bdd5-4aa3-9d5e-ff07f4b7b1de":,
+            self.keys.vnf_index: 1,
+            self.keys.sampling_time: 5,
+
+        }
+        supervisor = self.scale_process(message)
+        supervisor.attach(self)
+        asyncio.ensure_future(supervisor.check_docker_loop())
+        pending = asyncio.Task.all_tasks()  # allow end the last task!
+        print("current pending tasks:{}".format(len(pending)))
+        #loop.run_until_complete(asyncio.gather(*pending))
+
 
     async def cancel_all_supervisor_task(self):
         print("cancelling all supervisor task ")
         pending = asyncio.Task.all_tasks()
         print(type(pending))
         for task in pending:
-            print(type(task))
-            print(str(task))
+            #print(type(task))
+            #print(str(task))
             if "check_docker_loop" in str(str(task)):
                 print("docker loop") 
                 task.cancel()
