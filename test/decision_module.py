@@ -46,8 +46,8 @@ class decision_module():
             print("discarting message...")
         #rl_module.train(data)
         """
-        message = await self.scale_decision("json")
-        await self.send_message(message)
+        #message = await self.scale_decision("json")
+        await self.send_message("message")
     
     async def inference_server(self, websocket, path):
         
