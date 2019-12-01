@@ -2,17 +2,17 @@ import asyncio
 import websockets
 import json
 import datetime
-import rl_module
+#import rl_module
 #todo implement interface/abstract method
 class decision_module():
     def __init__(self):
         self.vnfid_timestamps = {}
-        rl_module = module()
+        #rl_module = module()
         self.start()
         
     def start(self):
         loop = asyncio.get_event_loop()
-        asyncio.ensure_future(websockets.serve(self.up_server, "localhost", 8544))
+        asyncio.ensure_future(websockets.serve(self.train_server, "localhost", 8544))
         pending = asyncio.Task.all_tasks() #allow end the last task!
         loop.run_until_complete(asyncio.gather(*pending))
         loop.run_forever()
@@ -28,6 +28,7 @@ class decision_module():
         print("receiving...")
         data = await websocket.recv()
         vnf_json_data = json.loads(data)
+        """
         print(vnf_json_data["vnf_id"])
         print(self.vnfid_timestamps.keys())
         if not vnf_json_data["vnf_id"] in self.vnfid_timestamps.keys():
@@ -43,7 +44,10 @@ class decision_module():
             self.vnfid_timestamps[vnf_json_data["vnf_id"]] = datetime.datetime.now()   
         else:
             print("discarting message...")
-        rl_module.train(data)
+        #rl_module.train(data)
+        """
+        message = await scale_decision("json")
+        await self.send_message(message)
     
     async def inference_server(self, websocket, path):
         
