@@ -96,7 +96,7 @@ class VnfManager(Observer):
             self.keys.flavor: "single", 
             self.keys.volume: "small",
             self.keys.ns_id: "7f38dede-9ea2-4616-b37f-492242883113",
-            self.keys.vnf_id "708083af-bdd5-4aa3-9d5e-ff07f4b7b1de":,
+            self.keys.vnf_id: "708083af-bdd5-4aa3-9d5e-ff07f4b7b1de",
             self.keys.vnf_index: 1,
             self.keys.sampling_time: 5,
 
