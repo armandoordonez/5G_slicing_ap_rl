@@ -45,7 +45,7 @@ class VnfScaleModule():
                 counter += 1
                 self.exec_in_os(docker_sentence)
         except KeyError:
-            self.custom_print(("Key error, creating lowest scale  docker..") 
+            self.custom_print("Key error, creating lowest scale  docker..") 
             identifier = "ss0"
             docker_sentence = "docker run --name mn._scale_.{}.{}.{} {} -t -d {}".format(ns_id[-4:],vnf_id[-4:],identifier,self.flavor_dic["single"], image)
             self.exec_in_os(docker_sentence)
@@ -65,16 +65,16 @@ class VnfScaleModule():
         parsed_json = r.json()
         docker_names = []
         docker_name = "mn._scale_.{}.{}".format(ns_id[-4:], vnf_id[-4:])
-        self.custom_print(("searching for docker names like{}...".format(docker_name))
+        self.custom_print("searching for docker names like{}...".format(docker_name))
 
         for container in parsed_json:
             try:
                 if docker_name in container["aliases"][0]:
-                    self.custom_print(("name found!")
-                    self.custom_print((container["aliases"][0])
+                    self.custom_print("name found!")
+                    self.custom_print(container["aliases"][0])
                     docker_names.append(container["aliases"][0])
             except KeyError:
-                self.custom_print(("key error: aliases")
+                self.custom_print("key error: aliases")
         return docker_names
         
 
@@ -86,12 +86,12 @@ class VnfScaleModule():
             Command to execute.
 
         '''
-        self.custom_print((command)
+        self.custom_print(command)
         os.system(command)           
         os.system("\n")
 
-    def custom_self.custom_print((self, message):
-        self.custom_print(("ScaleModule:    {}".format(message))
+    def custom_self.custom_print(self, message):
+        self.custom_print("ScaleModule:    {}".format(message))
         
 #sl = VnfScaleModule()      
 #sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
