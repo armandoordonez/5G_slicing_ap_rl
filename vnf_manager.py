@@ -145,7 +145,7 @@ class VnfManager(Observer):
             vnf_index = vnf[self.keys.vnf_index]
             sampling_time =  vnf[self.keys.sampling_time]
             supervisor =  self.build_supervisor(ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
-            asyncio.ensure_future(supervisor)
+            asyncio.ensure_future(supervisor.check_docker_loop())
         pending = asyncio.Task.all_tasks()
         print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
 
