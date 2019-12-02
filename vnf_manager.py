@@ -30,12 +30,16 @@ class VnfManager(Observer):
         self.vnf_message = {}
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
-        self.start(sdm_ip, base_url) #main loop
+        asyncio.ensure_future(self.start(sdm_ip, base_url)) #main loop
+        pending = asyncio.Task.all_tasks() # allow end the last task!
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.gather(*pending))
+
 
     def print(self, TAG, string):
         print("class: {}, {}".format(TAG, string))
         
-    def start(self, sdm_ip, base_url):        
+    async def start(self, sdm_ip, base_url):        
         #cadvisor_url = base_url.replace("https", "http") + ":8080/api/" #getting the url and parsing to cadvisor 
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
         auth_token = self.osm_helper.get_osm_authentication_token()
@@ -43,7 +47,6 @@ class VnfManager(Observer):
         self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
-        loop = asyncio.get_event_loop()
         asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
         vnf_supervisor_instances = {}
         for ns_id, ns in ns_vnf_list.items():
@@ -61,11 +64,11 @@ class VnfManager(Observer):
                 self.vnf_message[vnf_id] = message 
         pending = asyncio.Task.all_tasks() # allow end the last task!
         print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
-        loop.run_until_complete(asyncio.gather(*pending))
+        #loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
-        loop.run_forever()
+        #loop.run_forever()
 
     async def server_function(self, websockets, path):
         message = await websockets.recv()
