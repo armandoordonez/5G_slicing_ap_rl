@@ -96,7 +96,7 @@ class OsmHelper():
         #{'a4833c61-bc96-4b9a-b392-7e05800a7499': {'name': 'ns_name', 'vnf': {0: 'ea37c34f-6e85-46e4-a424-4cb69c0a8735', 1: '64bb6800-d23b-432f-a0c7-16a990e36492'}}}
         return ns_list, ns_vnf_dict
 
-    def custom_self.custom_print(self, message):
+    def custom_print(self, message):
         self.custom_print("OsmHelper:    {}".format(message))
 """
 if __name__ == "__main__":
