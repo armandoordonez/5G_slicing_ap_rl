@@ -54,7 +54,7 @@ class DockerSupervisor(CpuSubject):
                 if self.docker_instance.docker_id is not None:
                     await asyncio.sleep(self.docker_instance.sampling_time)
                     self.cpu_load, self.rx_usage, self.tx_usage = self.get_current_usage_stats()
-                    self.custom_print(1, "cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu_load, self.tx_usage, self.rx_usage, self.docker_instance.docker_name))
+                    self.custom_print( "cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu_load, self.tx_usage, self.rx_usage, self.docker_instance.docker_name),1)
                     if self.cpu_load > 0.3:
                         await self.notify()
         except asyncio.CancelledError as e:
@@ -84,7 +84,7 @@ class DockerSupervisor(CpuSubject):
         tx_usage = final_tx - self.c_tx
         self.c_rx = final_rx
         self.c_tx = final_tx
-        self.custom_print(1, "initial rx {} final rx {} ".format(self.c_rx, final_rx))
+        self.custom_print("initial rx {} final rx {} ".format(self.c_rx, final_rx),1)
         cpu_percentage = self.calculate_cpu_percentage(initial_cpu = initial_cpu, final_cpu = final_cpu, initial_date =initial_date, final_date = final_date)    
         return cpu_percentage, rx_usage, tx_usage
 
@@ -108,7 +108,7 @@ class DockerSupervisor(CpuSubject):
     async def notify(self):
         await self._observers.updateCpuUsageSubject(self)
     
-    def custom_print(self, mode=0, message):
+    def custom_print(self, message, mode=0):
         if mode is 0:
             print("Dsupervisor:    {}".format(message))
         if mode is 1:

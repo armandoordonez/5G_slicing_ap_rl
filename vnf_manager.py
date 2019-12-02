@@ -37,7 +37,7 @@ class VnfManager(Observer):
         loop.run_forever()
 
 
-    def custom_print(self, mode=0, message):
+    def custom_print(self, message,  mode=0):
         if mode is 0:
             print("Manager:{}".format(message))
         if mode is 1:
@@ -54,7 +54,7 @@ class VnfManager(Observer):
         vnf_supervisor_instances = {}
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index, vnf_id in ns["vnf"].items():
-                self.custom_print(1,"ns name:{} vnf:{}".format(ns_id, vnf_id))
+                self.custom_print("ns name:{} vnf:{}".format(ns_id, vnf_id),1)
 
                 message = {
                     self.keys.flavor: "single", 
@@ -70,16 +70,16 @@ class VnfManager(Observer):
         self.custom_print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
         #loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
-            self.custom_print(1,self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
-                instance.docker_id, instance.vnf_id, instance.docker_name))
+            self.custom_print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
+                instance.docker_id, instance.vnf_id, instance.docker_name), 1)
         #loop.run_forever()
 
     async def server_function(self, websockets, path):
         message = await websockets.recv()
         message = json.loads(message)
-        self.custom_print(1,"message from sdm: {}".format(message))
-        self.custom_print(1,"loop stopped")
-        self.custom_print(1,"generating new dockers..")
+        self.custom_print("message from sdm: {}".format(message),1)
+        self.custom_print("loop stopped",1)
+        self.custom_print("generating new dockers..",1)
         message = {
             self.keys.flavor: message[self.keys.flavor], 
             self.keys.volume: message[self.keys.volume],
@@ -93,7 +93,7 @@ class VnfManager(Observer):
             }
         await self.docker_process(message)
         pending = asyncio.Task.all_tasks()
-        self.custom_print(1,"current pending tasks:{}".format(len(pending)))
+        self.custom_print("current pending tasks:{}".format(len(pending)),1)
 
     async def docker_process(self, message):
         flavor = message[self.keys.flavor]
@@ -103,7 +103,7 @@ class VnfManager(Observer):
         vnf_index = message[self.keys.vnf_index]
         sampling_time = message[self.keys.sampling_time]
         if vnf_id not in self.vnf_message:
-            self.custom_print(1,"first time of id, inserting in a new row")
+            self.custom_print("first time of id, inserting in a new row",1)
             self.vnf_message[message[self.keys.vnf_id]] = message
         await self.cancel_all_supervisor_task()
         self.vnf_message[message[self.keys.vnf_id]] = message
@@ -140,7 +140,7 @@ class VnfManager(Observer):
             Command to execute.
 
         '''
-        self.custom_print(1,command)
+        self.custom_print(command, 1)
         os.system(command)           
         os.system("\n")
 
@@ -159,9 +159,9 @@ class VnfManager(Observer):
 
     #cancel only 
     async def cancel_all_supervisor_task(self):
-        self.custom_print(1,"cancelling all supervisor task ")
+        self.custom_print("cancelling all supervisor task ",1)
         pending = asyncio.Task.all_tasks()
-        self.custom_print(1, type(pending))
+        self.custom_print( type(pending), 1)
         cancelled = 0
         for task in pending:
             if task.cancelled():
@@ -237,22 +237,22 @@ class VnfManager(Observer):
 
     def restart_loadbalancer(self):
         restart_command = "docker restart {}".format(self.load_balancer_docker_id)
-        self.custom_print(1,restart_command)
+        self.custom_print(restart_command, 1)
         os.system(restart_command)
 
     def copy_cfg_to_loadbalancer(self):
         copy_command = "docker cp haproxy.cfg {}:/usr/local/etc/haproxy/haproxy.cfg".format(self.load_balancer_docker_id)
-        self.custom_print(1,copy_command)
+        self.custom_print(copy_command,1)
         os.system(copy_command)
 
     def add_ips_to_load_balancer(self, vnf_ips):
         with open(self.haproxy_cfg_name, "a") as myfile:
             count = 0 
-            self.custom_print(1,vnf_ips)
+            self.custom_print(vnf_ips, 1)
             for ip in vnf_ips:
-                self.custom_print(1, ip)
+                self.custom_print( ip,1)
                 parsed_ips = "    server server_{} {}:{}/{}/{} \n".format(ip[-1:], ip, "8080","download","video.mp4")
-                self.custom_print(1, parsed_ips)
+                self.custom_print(parsed_ips, 1)
                 myfile.write(parsed_ips)
                 count += 1
 
@@ -287,15 +287,15 @@ class VnfManager(Observer):
 
     def init_server_in_all_instances(self):
         r = requests.get(self.cadvisor_url)
-        self.custom_print(1, self.cadvisor_url)
+        self.custom_print( self.cadvisor_url,1)
         parsed_json = r.json()
         for container in parsed_json:
             try:            
                 for alias in container["aliases"]:
                     if "mn"  in alias:
-                        self.custom_print(1, alias)
+                        self.custom_print(alias, 1)
                         command = "docker exec -i "+alias+" nohup python3 /home/server.py > /home/server.log 2>&1&"
-                        self.custom_print(1, command)
+                        self.custom_print(command, 1)
                         os.system(command)           
                         os.system("\n")
             except KeyError as e:
