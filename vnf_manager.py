@@ -267,6 +267,7 @@ class VnfManager(Observer):
             self.keys.rx_usage: subject.rx_usage,
             self.keys.tx_usage: subject.tx_usage,
         }     
+        print("sending message: {}".format(message))
         await self.send_alert_to_sdm(json.dumps(message))
         
         #self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
