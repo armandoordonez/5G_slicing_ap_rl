@@ -11,8 +11,7 @@ class DockerSupervisor(CpuSubject):
     _state = None
 
     def __init__(self, cadvisor_url, ns_id, vnf_id, index, sampling_time, volume, flavor):
-        identifier =  "{}{}{}".format(flavor[0], volume[0], 0)
-        docker_name = "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
+        docker_name = self.get_docker_name(ns_id, vnf_id, flavor, volume)
         #docker_name = "py_serv"
         self.cadvisor_url = cadvisor_url 
         self.cadvisor_url_cpu = cadvisor_url.replace("v1.3/subcontainers/docker", "v1.0/containers/docker")
@@ -24,7 +23,7 @@ class DockerSupervisor(CpuSubject):
         self.c_rx = None
         docker_id = self.get_docker_id(docker_name)
         print(docker_id)
-        self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id[-4:], ns_id[-4:], index, sampling_time, volume, flavor)
+        self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id, ns_id, index, sampling_time, volume, flavor)
 
     def get_docker_id(self, docker_name):
         cadvisor_url = self.cadvisor_url
@@ -41,7 +40,10 @@ class DockerSupervisor(CpuSubject):
         return "docker id not found!"
 
 
-
+    def get_docker_name(self, ns_id, vnf_id, flavor, volume):
+        identifier =  "{}{}{}".format(flavor[0], volume[0], 0)
+        return  "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
+    
     async def check_docker_loop(self):
         print("check cpu loop..{}".format(self.docker_instance.name))
         try:

@@ -27,6 +27,7 @@ class VnfManager(Observer):
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
         self.keys = keys.Keys()
         self.vnf_scale_module = VnfScaleModule()
+        self.vnf_message = {}
         print(self.TAG,"init")
         print(self.TAG, "load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
         self.start(sdm_ip, base_url) #main loop
@@ -48,15 +49,6 @@ class VnfManager(Observer):
         for ns_id, ns in ns_vnf_list.items():
             for vnf_index, vnf_id in ns["vnf"].items():
                 self.print(self.TAG,"ns name:{} vnf:{}".format(ns_id, vnf_id))
-                """
-                flavor = "single"
-                volume = "small"
-                #TODO meter esto dentro de una funcion para que cada vez que quede facil conectar y desconectar los supervisores 
-                self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
-                self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
-                supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, 5, volume, flavor)
-                supervisor.attach(self)
-                """
                 message = {
                     self.keys.flavor: "single", 
                     self.keys.volume: "small",
@@ -66,36 +58,16 @@ class VnfManager(Observer):
                     self.keys.sampling_time: 5,
                 }
                 supervisor = self.scale_process(message)
-                asyncio.ensure_future(supervisor.check_docker_loop())   
-        pending = asyncio.Task.all_tasks()  # allow end the last task!
-        print("main, pending tasks{}".format(len(pending)))
+                asyncio.ensure_future(supervisor.check_docker_loop())  
+                self.vnf_message[vnf_id] = message 
+        pending = asyncio.Task.all_tasks() # allow end the last task!
+        print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
         loop.run_until_complete(asyncio.gather(*pending))
         for indx, instance in vnf_supervisor_instances.items():
             self.print(self.TAG,"docker_id: {} vnf_id: {} docker_name:{}".format(
                 instance.docker_id, instance.vnf_id, instance.docker_name))
         loop.run_forever()
-    """
-    async def server_function(self, websocket, path):
-        scale_decision = await websocket.recv()
-        wait_time = 20
-        scale_decision = json.loads(scale_decision)
-        self.print(self.TAG,"scale decision: {} ".format(scale_decision["scale_decision"]))
-        self.print(self.TAG,type(scale_decision["scale_decision"]))
-        scale_order = ""
-        if scale_decision["scale_decision"] is 1:
-            self.print(self.TAG,"scale up")
-            scale_order = "SCALE_OUT"
-        elif scale_decision["scale_decision"] is 0:
-            self.print(self.TAG,"scale down ")
-            scale_order = "SCALE_IN"
-        #TODO change this to scale from docker instead of OSM 
-        self.vnf_scale_module_instance.scale_instance(ns_id = scale_decision["ns_id"], scale_decision =  scale_order, member_index = scale_decision["member_index"])                 
-        self.print(self.TAG, "waiting {} seconds... ".format(wait_time))
-        await asyncio.sleep(wait_time)
-        self.print(self.TAG, "{} seconds passed yet".format(wait_time))
-        self.update_ips_lb()
-            #self.update_ips(scale_decision["vnf_id"])     
-    """
+
     async def server_function(self, websockets, path):
         message = await websockets.recv()
         message = json.loads(message)
@@ -106,20 +78,49 @@ class VnfManager(Observer):
         message = {
             self.keys.flavor: "single", 
             self.keys.volume: "small",
-            self.keys.ns_id: "7f38dede-9ea2-4616-b37f-492242883113",
-            self.keys.vnf_id: "708083af-bdd5-4aa3-9d5e-ff07f4b7b1de",
+            self.keys.ns_id: "6babd3f0-54c1-4b55-bf80-0071dba5aed0",
+            self.keys.vnf_id: "75b9828f-a5a6-4641-ae84-48b9ddd3695b",
             self.keys.vnf_index: 1,
             self.keys.sampling_time: 5,
-
         }
+        flavor = message[self.keys.flavor]
+        volume = message[self.keys.volume]
+        ns_id = message[self.keys.ns_id]
+        vnf_id = message[self.keys.vnf_id]
+        vnf_index = message[self.keys.vnf_index]
+        sampling_time = message[self.keys.sampling_time]
+        if vnf_id:
+            if flavor is not self.vnf_message[message[self.keys.flavor]] and volume is not self.vnf_message[message[self.keys.volume]]:
+                self.vnf_message[message[self.keys.vnf_id]] = message
+                self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume)))
+                self.scale_process(message)
+                await self.start_supervisors_in_all_vnfs()
+            else: 
+                print("nothing to do mantaining the scale")
+
+        else:
+            print("message without vnf_id, please send a message with all the argument, returning...")
+            return
         supervisor = self.scale_process(message)
         supervisor.attach(self)
         asyncio.ensure_future(supervisor.check_docker_loop())
         pending = asyncio.Task.all_tasks()  # allow end the last task!
         print("current pending tasks:{}".format(len(pending)))
         #loop.run_until_complete(asyncio.gather(*pending))
+    async def start_supervisors_in_all_vnfs(self):
+        for _, vnf in self.vnf_message.items():            
+            flavor = vnf[self.keys.flavor]
+            volume = vnf[self.keys.volume]
+            ns_id = vnf[self.keys.ns_id]
+            vnf_id = vnf[self.keys.vnf_id]
+            vnf_index = vnf[self.keys.vnf_index]
+            sampling_time =  vnf[self.keys.sampling_time]
+            supervisor = await self.build_supervisor(vnf_id, vnf_index, sampling_time, volume, flavor)
+            asyncio.ensure_future(supervisor)
+        pending = asyncio.Task.all_tasks()
+        print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
 
-
+    #cancel only 
     async def cancel_all_supervisor_task(self):
         print("cancelling all supervisor task ")
         pending = asyncio.Task.all_tasks()
@@ -128,11 +129,12 @@ class VnfManager(Observer):
             #print(type(task))
             #print(str(task))
             if "check_docker_loop" in str(str(task)):
-                print("docker loop") 
+                print("cancel loop") 
                 task.cancel()
         
     def scale_process(self, message):
         print("scaling process")
+        #get supervisors for all the dockers vs dont delete the supervisor of the other vnfs 
         flavor = message[self.keys.flavor]
         volume = message[self.keys.volume]
         ns_id = message[self.keys.ns_id]
@@ -141,10 +143,13 @@ class VnfManager(Observer):
         sampling_time =  message[self.keys.sampling_time]
         self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
         self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
+        #supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
+        #supervisor.attach(self)
+        #return supervisor
+    def build_supervisor(ns_id, vnf_id, vnf_index, sampling_time, volume, flavor):
         supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
         supervisor.attach(self)
         return supervisor
-        
 
     async def send_alert_to_sdm(self, message):
         url = self.sdm_ip
@@ -238,6 +243,10 @@ class VnfManager(Observer):
         
 
 
+    def get_docker_name(self, ns_id, vnf_id, flavor, volume):
+        identifier =  "{}{}{}".format(flavor[0], volume[0], 0)
+        return  "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
+
     def init_server_in_all_instances(self):
         r = requests.get(self.cadvisor_url)
         print(self.cadvisor_url)
@@ -269,5 +278,3 @@ if __name__ == "__main__":
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     VnfManager(base_url=main_url, sdm_ip=sdm_ip, sdm_port = args.sdm_port)
 
-#mn.dc1_name-2-video_server-VM-1
-# docker run --name video_server --memory="256m" --cpus 1 -t -d py_server

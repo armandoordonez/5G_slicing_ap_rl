@@ -5,9 +5,14 @@ class MainClass():
     def __init__(self):
         loop = asyncio.get_event_loop()
 
-        asyncio.ensure_future(self.counter("anuel"))
+        pa = asyncio.ensure_future(self.counter("anuel"))
+        dos = asyncio.ensure_future(self.counter("ozuna"))
+
         my_tasks = []
         asyncio.ensure_future(self.add_tasks())
+        print(hex(id(pa)))
+        print(hex(id(dos)))
+
         """
         asyncio.ensure_future(self.counter("ozuna"))
         asyncio.ensure_future(self.printer())
@@ -25,9 +30,10 @@ class MainClass():
         while True:
             loop = asyncio.get_event_loop()
             pending = asyncio.Task.all_tasks()
+            print(pending)
             print("pending tasks: {}".format(len(pending)))  
             await asyncio.sleep(5)  
-            asyncio.ensure_future(self.counter("{} 6ixnin9".format(counter)))
+            #asyncio.ensure_future(self.counter("{} 6ixnin9".format(counter)))
             counter += 1
             #loop.run_until_complete(asyncio.gather(*pending))
 
