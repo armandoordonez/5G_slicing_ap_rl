@@ -25,7 +25,7 @@ class OsmHelper():
             'cache-control': "no-cache",
         }
 
-        print("getting auth token: {}".format(url))
+        self.custom_print("getting auth token: {}".format(url))
         response = requests.request("POST", url, data=payload, headers=headers, verify=False)
         response_parsed = response.content.split()
         return response_parsed[2].decode("utf-8")
@@ -43,7 +43,7 @@ class OsmHelper():
             An array with the ips. 
         '''
         url = self.base_url + "nslcm/v1/vnf_instances/"+vnf_id
-        print("getting ips")
+        self.custom_print("getting ips")
         payload = ""
         headers = {
             'Content-Type': "application/",
@@ -57,7 +57,7 @@ class OsmHelper():
         for element in response_in_yaml["vdur"]:
                 current_ips.append(element["interfaces"][0]["ip-address"])                    
         vnf_ips[vnf_id] = current_ips
-        print(vnf_ips)
+        self.custom_print(vnf_ips)
         return vnf_ips 
 
 
@@ -75,7 +75,7 @@ class OsmHelper():
         ns_vnf_dict = {}
         url = self.base_url + "nslcm/v1/ns_instances"
         payload = ""
-        print(url)
+        self.custom_print(url)
         headers = {
             'Content-Type': "application/",
             'Authorization': "Bearer " + self.auth_token,
@@ -95,6 +95,9 @@ class OsmHelper():
         # {'network_slice_id': {'name': 'ns_name', 'vnf':{index: 'vnf_id_at_index_0'}}}
         #{'a4833c61-bc96-4b9a-b392-7e05800a7499': {'name': 'ns_name', 'vnf': {0: 'ea37c34f-6e85-46e4-a424-4cb69c0a8735', 1: '64bb6800-d23b-432f-a0c7-16a990e36492'}}}
         return ns_list, ns_vnf_dict
+
+    def custom_self.custom_print(self, message):
+        self.custom_print("OsmHelper:    {}".format(message))
 """
 if __name__ == "__main__":
     url = "https://35.184.244.20:9999/osm/"
