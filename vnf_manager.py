@@ -167,7 +167,7 @@ class VnfManager(Observer):
             if task.cancelled():
                 cancelled +=1
             if "check_docker_loop" in str(str(task)):
-                custom_print("cancel loop", 1) 
+                self.custom_print("cancel loop", 1) 
                 task.cancel()
         self.custom_print("tasks cancelled {}".format(cancelled), 1)
         
