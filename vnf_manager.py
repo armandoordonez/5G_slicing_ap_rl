@@ -9,6 +9,7 @@ import websockets
 import json
 from shutil import copyfile
 import os
+from vnf_scale_order_module import VnfScaleModule
 from docker_supervisor import DockerSupervisor
 import keys as keys
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
@@ -20,6 +21,7 @@ class VnfManager(Observer):
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
         self.sdm_port = sdm_port # port of the scale decision module 
         self.sdm_ip = sdm_ip # port of the scale decision module ip
+        self.vnf_scale_module = VnfScaleModule()
         self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
         self.keys = keys.Keys()
