@@ -159,12 +159,16 @@ class VnfManager(Observer):
         print("cancelling all supervisor task ")
         pending = asyncio.Task.all_tasks()
         print(type(pending))
+        cancelled = 0
         for task in pending:
             #print(type(task))
             #print(str(task))
+            if task.cancelled():
+                cancelled +=1
             if "check_docker_loop" in str(str(task)):
                 print("cancel loop") 
                 task.cancel()
+        print("tasks cancelled {}".format(cancelled))
         
     def scale_process(self, message):
         print("scaling process")
