@@ -57,8 +57,7 @@ class VnfManager(Observer):
                     self.keys.vnf_index: vnf_index,
                     self.keys.sampling_time: 5,
                 }
-                supervisor = self.scale_process(message)
-                asyncio.ensure_future(supervisor.check_docker_loop())  
+                await self.docker_process(message)
                 self.vnf_message[vnf_id] = message 
         pending = asyncio.Task.all_tasks() # allow end the last task!
         print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
@@ -72,7 +71,6 @@ class VnfManager(Observer):
         message = await websockets.recv()
         message = json.loads(message)
         print("message from sdm: {}".format(message))
-        await self.cancel_all_supervisor_task()
         print("loop stopped")
         print("generating new dockers..")
         message = {
@@ -83,6 +81,10 @@ class VnfManager(Observer):
             self.keys.vnf_index: 1,
             self.keys.sampling_time: 5,
         }
+        await self.docker_process(message)
+        print("current pending tasks:{}".format(len(pending)))
+
+    async def docker_process(self, message):
         flavor = message[self.keys.flavor]
         volume = message[self.keys.volume]
         ns_id = message[self.keys.ns_id]
@@ -90,7 +92,9 @@ class VnfManager(Observer):
         vnf_index = message[self.keys.vnf_index]
         sampling_time = message[self.keys.sampling_time]
         if vnf_id:
-            if flavor is not self.vnf_message[message[self.keys.flavor]] and volume is not self.vnf_message[message[self.keys.volume]]:
+            if flavor is not self.vnf_message[vnf_id][self.keys.flavor] and volume is not self.vnf_message[vnf_id][self.keys.volume]:
+                await self.cancel_all_supervisor_task()
+
                 self.vnf_message[message[self.keys.vnf_id]] = message
                 self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
                 self.scale_process(message)
@@ -101,12 +105,25 @@ class VnfManager(Observer):
         else:
             print("message without vnf_id, please send a message with all the argument, returning...")
             return
-        supervisor = self.scale_process(message)
-        supervisor.attach(self)
-        asyncio.ensure_future(supervisor.check_docker_loop())
         pending = asyncio.Task.all_tasks()  # allow end the last task!
-        print("current pending tasks:{}".format(len(pending)))
-        #loop.run_until_complete(asyncio.gather(*pending))
+    def delete_docker_with_name(self, docker_name):
+        docker_sentence = "docker container stop  {}".format(docker_name)
+        self.exec_in_os(docker_sentence)
+        docker_sentence = "docker container rm  {}".format(docker_name)
+        self.exec_in_os(docker_sentence)        
+
+    def exec_in_os(self, command):
+        '''Execute command in OS bash
+        Parameters
+        ----------
+        command: str
+            Command to execute.
+
+        '''
+        print(command)
+        os.system(command)           
+        os.system("\n")
+
     async def start_supervisors_in_all_vnfs(self):
         for _, vnf in self.vnf_message.items():            
             flavor = vnf[self.keys.flavor]
