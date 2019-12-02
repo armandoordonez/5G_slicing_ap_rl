@@ -93,7 +93,7 @@ class VnfScaleModule():
         os.system("\n")
 
     def custom_print(self, message):
-        print("{} ScaleModule:    {} {}".format(message, bcolors.WARNING, bcolors.ENDC))
+        print("{} ScaleModule:    {} {}".format( bcolors.WARNING, message, bcolors.ENDC))
         
 #sl = VnfScaleModule()      
 #sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")

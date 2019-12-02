@@ -98,7 +98,7 @@ class OsmHelper():
         return ns_list, ns_vnf_dict
 
     def custom_print(self, message):
-        print("{} OsmHelper:    {} {}".format(message, bcolors.UNDERLINE, bcolors.ENDC))
+        print("{} OsmHelper:    {} {}".format(bcolors.UNDERLINE, message, bcolors.ENDC))
 """
 if __name__ == "__main__":
     url = "https://35.184.244.20:9999/osm/"

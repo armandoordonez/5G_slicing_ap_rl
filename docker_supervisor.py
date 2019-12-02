@@ -112,9 +112,9 @@ class DockerSupervisor(CpuSubject):
     
     def custom_print(self, message, mode=0):
         if mode is 0:
-            print("{} Dsupervisor:    {} {}".format(message, bcolors.OKGREEN, bcolors.ENDC))
+            print("{} Dsupervisor:    {} {}".format(bcolors.OKGREEN, message,  bcolors.ENDC))
         if mode is 1:
-            print("{} Dsupervisor:        {} {}".format(message, bcolors.OKGREEN, bcolors.ENDC))
+            print("{} Dsupervisor:        {} {}".format( bcolors.OKGREEN, message, bcolors.ENDC))
 
 
 #loop = asyncio.get_event_loop()
