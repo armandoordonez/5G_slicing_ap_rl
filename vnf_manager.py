@@ -103,18 +103,18 @@ class VnfManager(Observer):
         self.scale_process(message)
         await self.start_supervisors_in_all_vnfs()
 
-            """
-            if flavor is not self.vnf_message[vnf_id][self.keys.flavor] and volume is not self.vnf_message[vnf_id][self.keys.volume]:
-                await self.cancel_all_supervisor_task()
+        """
+        if flavor is not self.vnf_message[vnf_id][self.keys.flavor] and volume is not self.vnf_message[vnf_id][self.keys.volume]:
+            await self.cancel_all_supervisor_task()
 
-                self.vnf_message[message[self.keys.vnf_id]] = message
-                self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
-                self.scale_process(message)
-                await self.start_supervisors_in_all_vnfs()
-            else: 
-                print("nothing to do mantaining the scale")
-                return
-            """
+            self.vnf_message[message[self.keys.vnf_id]] = message
+            self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
+            self.scale_process(message)
+            await self.start_supervisors_in_all_vnfs()
+        else: 
+            print("nothing to do mantaining the scale")
+            return
+        """
 
 
         pending = asyncio.Task.all_tasks()  # allow end the last task!
