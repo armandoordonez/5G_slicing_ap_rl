@@ -4,6 +4,8 @@ from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
 import collections
 import asyncio, maya, math
 import keys as keys
+from utils.colors import bcolors 
+
 ki = keys.Keys()
 DockerInstance = collections.namedtuple('DockerInstance', (ki.docker_name, ki.docker_id, ki.vnf_id, ki.ns_id, ki.vnf_index, ki.sampling_time, ki.volume, ki.flavor )) 
 #TODO hacer refactor con las constantes en unas sola clase.
@@ -110,9 +112,9 @@ class DockerSupervisor(CpuSubject):
     
     def custom_print(self, message, mode=0):
         if mode is 0:
-            print("Dsupervisor:    {}".format(message))
+            print("{} Dsupervisor:    {} {}".format(message, bcolors.OKGREEN, bcolors.ENDC))
         if mode is 1:
-            print("Dsupervisor:        {}".format(message))
+            print("{} Dsupervisor:        {} {}".format(message, bcolors.OKGREEN, bcolors.ENDC))
 
 
 #loop = asyncio.get_event_loop()

@@ -12,6 +12,8 @@ import os
 from vnf_scale_order_module import VnfScaleModule
 from docker_supervisor import DockerSupervisor
 import keys as keys
+from utils.colors import bcolors 
+
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO Cancel event loop.
 class VnfManager(Observer):
@@ -37,9 +39,9 @@ class VnfManager(Observer):
 
     def custom_print(self, message,  mode=0):
         if mode is 0:
-            print("Manager:{}".format(message))
+            print("{} Manager:{} {}".format(message, bcolors.OKBLUE, bcolors.ENDC))
         if mode is 1:
-            print("Manager:    {}".format(message))
+            print("{} Manager:    {} {}".format(message, bcolors.OKBLUE, bcolors.ENDC))
         
     async def start(self, sdm_ip, base_url):        
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
@@ -165,9 +167,9 @@ class VnfManager(Observer):
             if task.cancelled():
                 cancelled +=1
             if "check_docker_loop" in str(str(task)):
-                print("cancel loop") 
+                custom_print("cancel loop", 1) 
                 task.cancel()
-        print("tasks cancelled {}".format(cancelled))
+        self.custom_print("tasks cancelled {}".format(cancelled), 1)
         
     def scale_process(self, message):
         self.custom_print(0, "scaling process")
