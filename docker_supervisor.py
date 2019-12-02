@@ -3,7 +3,9 @@ import time
 from ObserverPattern.vnf_observer_pattern import VnfCpuSubject  as CpuSubject
 import collections
 import asyncio, maya, math
-DockerInstance = collections.namedtuple('DockerInstance', ('name','docker_id','vnf_id','ns_id','index', 'sampling_time', 'volume', 'flavor')) 
+import keys as keys
+ki = keys.Keys()
+DockerInstance = collections.namedtuple('DockerInstance', (ki.docker_name, ki.docker_id, ki.vnf_id, ki.ns_id, ki.vnf_index, ki.sampling_time, ki.volume, ki.flavor )) 
 #TODO hacer refactor con las constantes en unas sola clase.
 #TODO hacer una maquina de estado
 class DockerSupervisor(CpuSubject):
