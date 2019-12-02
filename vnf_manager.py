@@ -84,7 +84,7 @@ class VnfManager(Observer):
         await self.docker_process(message)
         print("current pending tasks:{}".format(len(pending)))
 
-    async def docker_process(self, message):
+    def docker_process(self, message):
         flavor = message[self.keys.flavor]
         volume = message[self.keys.volume]
         ns_id = message[self.keys.ns_id]
