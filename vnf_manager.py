@@ -34,6 +34,7 @@ class VnfManager(Observer):
         pending = asyncio.Task.all_tasks() # allow end the last task!
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.gather(*pending))
+        loop.run_forever()
 
 
     def print(self, TAG, string):
