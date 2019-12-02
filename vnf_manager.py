@@ -175,7 +175,7 @@ class VnfManager(Observer):
         #supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
         #supervisor.attach(self)
         #return supervisor
-    def build_supervisor(ns_id, vnf_id, vnf_index, sampling_time, volume, flavor):
+    def build_supervisor(self, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor):
         supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
         supervisor.attach(self)
         return supervisor
