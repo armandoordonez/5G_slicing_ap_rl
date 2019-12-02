@@ -26,7 +26,7 @@ class DockerSupervisor(CpuSubject):
         docker_id = self.get_docker_id(docker_name)
         print(docker_id)
         self.docker_instance = DockerInstance(docker_name, docker_id, vnf_id, ns_id, index, sampling_time, volume, flavor)
-        print(docker_instance)
+        print(self.docker_instance)
 
     def get_docker_id(self, docker_name):
         cadvisor_url = self.cadvisor_url
