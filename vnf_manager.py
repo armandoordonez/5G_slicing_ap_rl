@@ -89,6 +89,7 @@ class VnfManager(Observer):
             self.keys.tx_usage: message[self.keys.tx_usage],   
             }
         await self.docker_process(message)
+        pending = asyncio.Task.all_tasks()
         print("current pending tasks:{}".format(len(pending)))
 
     async def docker_process(self, message):
