@@ -92,7 +92,7 @@ class VnfManager(Observer):
         if vnf_id:
             if flavor is not self.vnf_message[message[self.keys.flavor]] and volume is not self.vnf_message[message[self.keys.volume]]:
                 self.vnf_message[message[self.keys.vnf_id]] = message
-                self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume)))
+                self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
                 self.scale_process(message)
                 await self.start_supervisors_in_all_vnfs()
             else: 
