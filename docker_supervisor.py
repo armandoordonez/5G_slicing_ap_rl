@@ -39,7 +39,7 @@ class DockerSupervisor(CpuSubject):
                     self.custom_print("docker id found!")
                     return container["aliases"][1]
             except KeyError:
-                print("key error: aliases")
+                self.custom_print("key error: aliases")
         return "docker id not found!"
 
 

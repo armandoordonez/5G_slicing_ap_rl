@@ -1,6 +1,4 @@
-from vnf_ip_supervisor import VnfCpuSupervisor
 from osm_helper import OsmHelper
-import vnf_monitor as vnf_monitor
 import requests
 import argparse
 import urllib3
@@ -9,7 +7,6 @@ from ObserverPattern.vnf_observer_pattern import VnfCpuSubject as CpuSubject
 import asyncio
 import websockets
 import json
-from vnf_scale_order_module import VnfScaleModule
 from shutil import copyfile
 import os
 from docker_supervisor import DockerSupervisor
@@ -26,7 +23,6 @@ class VnfManager(Observer):
         self.cadvisor_url =  base_url.replace("https","http")+":8080/api/v1.3/subcontainers/docker"
         self.osm_helper = OsmHelper(base_url+":9999/osm/")
         self.keys = keys.Keys()
-        self.vnf_scale_module = VnfScaleModule()
         self.vnf_message = {}
         self.custom_print("init")
         self.custom_print("load balancer docker id: {}, cfg name: {}".format(self.load_balancer_docker_id, self.haproxy_cfg_name)) 
