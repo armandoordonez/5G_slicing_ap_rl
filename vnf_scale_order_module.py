@@ -90,7 +90,7 @@ class VnfScaleModule():
         os.system(command)           
         os.system("\n")
 
-    def custom_self.custom_print(self, message):
+    def custom_print(self, message):
         self.custom_print("ScaleModule:    {}".format(message))
         
 #sl = VnfScaleModule()      
