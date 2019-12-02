@@ -28,6 +28,7 @@ class decision_module():
         print("receiving...")
         data = await websocket.recv()
         vnf_json_data = json.loads(data)
+        print(vnf_json_data)
         """
         print(vnf_json_data["vnf_id"])
         print(self.vnfid_timestamps.keys())
@@ -47,7 +48,7 @@ class decision_module():
         #rl_module.train(data)
         """
         #message = await self.scale_decision("json")
-        await self.send_message("message")
+        await self.send_message(vnf_json_data)
     
     async def inference_server(self, websocket, path):
         

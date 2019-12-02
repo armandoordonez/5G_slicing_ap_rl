@@ -5,3 +5,6 @@ class Keys():
     vnf_id = "vnf_id"
     vnf_index = "vnf_index"
     sampling_time = "sampling_time"
+    cpu_load = "cpu_load"
+    rx_usage = "rx_usage"
+    tx_usage = "tx_usage"

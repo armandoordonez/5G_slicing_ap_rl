@@ -78,13 +78,16 @@ class VnfManager(Observer):
         print("loop stopped")
         print("generating new dockers..")
         message = {
-            self.keys.flavor: "single", 
-            self.keys.volume: "small",
-            self.keys.ns_id: "6babd3f0-54c1-4b55-bf80-0071dba5aed0",
-            self.keys.vnf_id: "75b9828f-a5a6-4641-ae84-48b9ddd3695b",
-            self.keys.vnf_index: 1,
-            self.keys.sampling_time: 5,
-        }
+            self.keys.flavor: message[self.keys.flavor], 
+            self.keys.volume: message[self.keys.volume],
+            self.keys.ns_id: message[self.keys.ns_id],
+            self.keys.vnf_id: message[self.keys.vnf_id],
+            self.keys.vnf_index: message[self.keys.vnf_index],
+            self.keys.sampling_time: message[self.keys.sampling_time],
+            self.keys.cpu_load: message[self.keys.cpu_load],
+            self.keys.rx_usage: message[self.keys.rx_usage],
+            self.keys.tx_usage: message[self.keys.tx_usage],   
+            }
         await self.docker_process(message)
         print("current pending tasks:{}".format(len(pending)))
 
@@ -253,19 +256,17 @@ class VnfManager(Observer):
         #print("instances number: {}".format(len(ips[subject.vnf_id])))
         #TODO make a way to get all the instances number.
         #
-        """
         message = {
-            "cpu": subject.cpu_load,
-            "docker_id": subject.docker_id,
-            "vnf_id": subject.vnf_id,
-            "member_index": subject.member_index,
-            "ns_id": subject.ns_id,
-            #"number_of_vnfs": str(len(ips[subject.vnf_id])) TODO vnf flavor 
-        }
-        """
-        message = {
-            "name": "andresmaca"
-        }        
+            self.keys.flavor: subject.docker_instance.flavor, 
+            self.keys.volume: subject.docker_instance.volume,
+            self.keys.ns_id:  subject.docker_instance.ns_id,
+            self.keys.vnf_id:  subject.docker_instance.vnf_id,
+            self.keys.vnf_index:  subject.docker_instance.vnf_index,
+            self.keys.sampling_time: subject.docker_instance.sampling_time,
+            self.keys.cpu_load: subject.cpu_load,
+            self.keys.rx_usage: subject.rx_usage,
+            self.keys.tx_usage: subject.tx_usage,
+        }     
         await self.send_alert_to_sdm(json.dumps(message))
         
         #self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
