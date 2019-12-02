@@ -48,13 +48,13 @@ class DockerSupervisor(CpuSubject):
         return  "mn._scale_.{}.{}.{}".format(ns_id[-4:], vnf_id[-4:],identifier)
     
     async def check_docker_loop(self):
-        print("check cpu loop..{}".format(self.docker_instance.name))
+        print("check cpu loop..{}".format(self.docker_instance.docker_name))
         try:
             while True:
                 if self.docker_instance.docker_id is not None:
                     await asyncio.sleep(self.docker_instance.sampling_time)
                     self.cpu, self.rx_usage, self.tx_usage = self.get_current_usage_stats()
-                    print("cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu, self.tx_usage, self.rx_usage, self.docker_instance.name))
+                    print("cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu, self.tx_usage, self.rx_usage, self.docker_instance.docker_name))
                     if self.cpu > 0.3:
                         await self.notify()
         except asyncio.CancelledError as e:
