@@ -29,6 +29,8 @@ class decision_module():
         data = await websocket.recv()
         vnf_json_data = json.loads(data)
         print(vnf_json_data)
+        vnf_json_data["flavor"] = "double"
+
         """
         print(vnf_json_data["vnf_id"])
         print(self.vnfid_timestamps.keys())
