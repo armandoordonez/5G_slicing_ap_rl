@@ -294,7 +294,7 @@ class VnfManager(Observer):
                 for alias in container["aliases"]:
                     if "mn"  in alias:
                         self.custom_print(alias, 1)
-                        command = "docker exec -i "+alias+" nohup python3 /home/server.py > /home/server.log 2>&1&"
+                        command = "docker exec -i "+alias+" nohup unset DISPLAY; vlc-wrapper -R -vvv /home/video_server/video.mp4 --sout '#standard{access=http,mux=asf,dst=0.0.0.0:7079}' /home/server.py > /home/server.log 2>&1&"
                         self.custom_print(command, 1)
                         os.system(command)           
                         os.system("\n")
