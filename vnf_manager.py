@@ -220,7 +220,7 @@ class VnfManager(Observer):
         for vnf in vnf_list:
             for ip in self.get_ips_from(vnf):
                 ip_list.append(ip)
-        ip_list.extend(self.vnf_scale_module.get_docker_scale_ips())
+        ip_list.extend(self.vnf_scale_module.get_docker_scale_ips(self.cadvisor_url))
         self.custom_print(0, "debbugging.. ips {}".format(ip_list))
         self.init_server_in_all_instances()
         self.add_ips_to_load_balancer(ip_list)
