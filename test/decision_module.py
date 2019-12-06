@@ -30,6 +30,8 @@ class decision_module():
         vnf_json_data = json.loads(data)
         print(vnf_json_data)
         vnf_json_data["flavor"] = "double"
+        vnf_json_data["volume"] = "medium"
+
 
         """
         print(vnf_json_data["vnf_id"])
