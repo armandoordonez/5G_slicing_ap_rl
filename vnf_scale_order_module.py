@@ -79,6 +79,32 @@ class VnfScaleModule():
                 self.custom_print("key error: aliases")
         return docker_names
         
+    def get_docker_scale_ips(self, cadvisor_url):
+        docker_ids = self.get_docker_ids(cadvisor_url)
+        self.custom_print(docker_ids)
+        docker_ips = []
+        for docker in docker_ids:
+            docker_ips.append(self.get_docker_ip(docker))
+        return docker_ips
+    
+    def get_docker_ids(self, cadvisor_url):
+        docker_name = "mn._scale_"
+        r = requests.get(cadvisor_url)
+        parsed_json = r.json()
+        self.custom_print(docker_name)
+        docker_ids = []
+        for container in parsed_json:
+            try:
+                if docker_name in container["aliases"][0]:
+                    self.custom_print("docker id found!")
+                    docker_ids.append(container["aliases"][1])
+            except KeyError:
+                self.custom_print("key error: aliases")
+        return docker_ids
+    def get_docker_ip(self, id):
+        result = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mn._scale_.b24f.fd25.ss0").read()
+        return result.replace("\n","")
+
 
     def exec_in_os(self, command):
         '''Execute command in OS bash
@@ -96,6 +122,7 @@ class VnfScaleModule():
         print("{} ScaleModule:    {} {}".format( bcolors.WARNING, message, bcolors.ENDC))
         
 #sl = VnfScaleModule()      
+#sl.get_docker_scale_ips("http://34.67.105.37:8080/api/v1.3/subcontainers/docker")
 #sl.scale_up_dockers("c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68", "medium", "double") #,"medisum","double")
 #sl.scale_down_dockers("http://34.69.148.248:8080/api/v1.3/subcontainers/docker","c630036f-174a-4892-afd7-0be46a637f05","d1bc4b47-eb56-4fb5-838a-ea0e5d137e68") #, "medium", "double") #,"medisum","double")
 

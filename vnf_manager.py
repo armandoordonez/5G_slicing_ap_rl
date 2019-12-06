@@ -47,7 +47,6 @@ class VnfManager(Observer):
         self.base_url = base_url+":9999/osm/"  # osm nbi api.
         auth_token = self.osm_helper.get_osm_authentication_token()
         self.auth_token = auth_token
-        self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
         #TODO cada vez que se actualize el load balancer, se debe actualizar el vnf_list.....
         ns_id_list, ns_vnf_list = self.osm_helper.get_nsid_list()
         asyncio.ensure_future(websockets.serve(self.server_function, "localhost", 8765))
@@ -66,6 +65,9 @@ class VnfManager(Observer):
                 }
                 await self.docker_process(message)
                 self.vnf_message[vnf_id] = message 
+        
+        self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
+
         pending = asyncio.Task.all_tasks() # allow end the last task!
         self.custom_print("number of vnfs: {} current_tasks:{}".format(len(self.vnf_message),len(pending)))
         #loop.run_until_complete(asyncio.gather(*pending))
@@ -110,8 +112,9 @@ class VnfManager(Observer):
         self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
         self.scale_process(message)
         await self.start_supervisors_in_all_vnfs()
-
+        self.update_ips_lb()
         """
+        TODO implement this
         if flavor is not self.vnf_message[vnf_id][self.keys.flavor] and volume is not self.vnf_message[vnf_id][self.keys.volume]:
             await self.cancel_all_supervisor_task()
 
@@ -217,11 +220,13 @@ class VnfManager(Observer):
         for vnf in vnf_list:
             for ip in self.get_ips_from(vnf):
                 ip_list.append(ip)
+        ip_list.extend(self.vnf_scale_module.get_docker_scale_ips())
         self.custom_print(0, "debbugging.. ips {}".format(ip_list))
         self.init_server_in_all_instances()
         self.add_ips_to_load_balancer(ip_list)
         self.copy_cfg_to_loadbalancer()
         self.restart_loadbalancer()
+
 
 
 
