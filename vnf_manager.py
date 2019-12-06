@@ -292,7 +292,7 @@ class VnfManager(Observer):
         for container in parsed_json:
             try:            
                 for alias in container["aliases"]:
-                    if "mn"  in alias:
+                    if "mn.dc"  in alias:
                         self.custom_print(alias, 1)
                         command = "docker exec -i "+alias+" nohup python3 /home/server.py > /home/server.log 2>&1&"
                         self.custom_print(command, 1)
