@@ -63,7 +63,9 @@ class VnfManager(Observer):
                     self.keys.vnf_index: vnf_index,
                     self.keys.sampling_time: 5,
                 }
+                #Print(for debug...)
                 await self.docker_process(message)
+                await asyncio.sleep(10)
                 self.vnf_message[vnf_id] = message 
         
         self.update_ips_lb() #TODO actualizar direcciones ip de las instancias creadas con docker 
@@ -107,7 +109,7 @@ class VnfManager(Observer):
         sampling_time = message[self.keys.sampling_time]
         if vnf_id not in self.vnf_message:
             self.custom_print("first time of id, inserting in a new row",1)
-            self.vnf_message[message[self.keys.vnf_id]] = message
+            self.vnf_message[message[self.keys.vnf_id]] = message #Para que se hace esto?
         await self.cancel_all_supervisor_task()
         self.vnf_message[message[self.keys.vnf_id]] = message
         #self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
@@ -165,7 +167,7 @@ class VnfManager(Observer):
     async def cancel_all_supervisor_task(self):
         self.custom_print("cancelling all supervisor task ",1)
         pending = asyncio.Task.all_tasks()
-        self.custom_print( type(pending), 1)
+        #self.custom_print( type(pending), 1)
         cancelled = 0
         for task in pending:
             if task.cancelled():

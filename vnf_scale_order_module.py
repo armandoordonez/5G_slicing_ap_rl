@@ -71,11 +71,13 @@ class VnfScaleModule():
 
         for container in parsed_json:
             try:
+                self.custom_print("container name: {}".format(container["aliases"][0]))
                 if docker_name in container["aliases"][0]:
                     self.custom_print("name found!")
                     self.custom_print(container["aliases"][0])
                     docker_names.append(container["aliases"][0])
             except KeyError:
+                
                 self.custom_print("key error: aliases")
         return docker_names
         
