@@ -41,7 +41,7 @@ class decision_module():
             message = await self.scale_decision(vnf_json_data)
             await self.send_message(message)    
     
-        elif(((datetime.datetime.now() - self.vnfid_timestamps[vnf_json_data["vnf_id"]]).total_seconds() / 60.0) > 1): 
+        elif(((datetime.datetime.now() - self.vnfid_timestamps[vnf_json_data["vnf_id"]]).total_seconds() / 180.0) > 1): 
             print("1 minute pass already... sending new order to scale....")
             message = await self.scale_decision(vnf_json_data)
             await self.send_message(message)
