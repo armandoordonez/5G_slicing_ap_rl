@@ -80,7 +80,7 @@ class VnfScaleModule():
         return docker_names
         
     def get_docker_scale_ips(self, cadvisor_url):
-        print("getting docker scale ips")
+        print("")
         docker_ids = self.get_docker_ids(cadvisor_url)
         self.custom_print(docker_ids)
         docker_ips = []
@@ -103,8 +103,8 @@ class VnfScaleModule():
                 self.custom_print("key error: aliases")
         return docker_ids
     def get_docker_ip(self, id):
-        result = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}".format(id)).read()
-
+        command = "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' " + id
+        result = os.popen(command).read()
         return result.replace("\n","")
 
 
