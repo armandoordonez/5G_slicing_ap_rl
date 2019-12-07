@@ -110,7 +110,7 @@ class VnfManager(Observer):
             self.vnf_message[message[self.keys.vnf_id]] = message
         await self.cancel_all_supervisor_task()
         self.vnf_message[message[self.keys.vnf_id]] = message
-        self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
+        #self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
         self.scale_process(message)
         await self.start_supervisors_in_all_vnfs()
         #self.update_ips_lb()
