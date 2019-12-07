@@ -94,6 +94,7 @@ class VnfManager(Observer):
             self.keys.tx_usage: message[self.keys.tx_usage],   
             }
         await self.docker_process(message)
+        self.update_ips_lb()
         pending = asyncio.Task.all_tasks()
         self.custom_print("current pending tasks:{}".format(len(pending)),1)
 
@@ -112,7 +113,7 @@ class VnfManager(Observer):
         self.delete_docker_with_name(self.get_docker_name(ns_id, vnf_id, flavor, volume))
         self.scale_process(message)
         await self.start_supervisors_in_all_vnfs()
-        self.update_ips_lb()
+        #self.update_ips_lb()
         """
         TODO implement this
         if flavor is not self.vnf_message[vnf_id][self.keys.flavor] and volume is not self.vnf_message[vnf_id][self.keys.volume]:
