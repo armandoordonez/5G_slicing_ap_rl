@@ -29,8 +29,7 @@ class decision_module():
         data = await websocket.recv()
         vnf_json_data = json.loads(data)
         print(vnf_json_data)
-        vnf_json_data["flavor"] = "double"
-        vnf_json_data["volume"] = "medium"
+
 
 
         
@@ -60,7 +59,8 @@ class decision_module():
 
     async def scale_decision(self, message):
         await asyncio.sleep(3) 
-        message["scale_decision"] = 1
+        message["flavor"] = "double"
+        message["volume"] = "medium"
         return message
         
 #    async def scale_module(self, cpu, docker_id, ns_id, vnf_id, flavor_type, current_instance_number):
