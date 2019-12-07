@@ -80,6 +80,7 @@ class VnfScaleModule():
         return docker_names
         
     def get_docker_scale_ips(self, cadvisor_url):
+        print("getting docker scale ips")
         docker_ids = self.get_docker_ids(cadvisor_url)
         self.custom_print(docker_ids)
         docker_ips = []
