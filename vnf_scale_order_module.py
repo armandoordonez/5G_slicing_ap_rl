@@ -103,7 +103,8 @@ class VnfScaleModule():
                 self.custom_print("key error: aliases")
         return docker_ids
     def get_docker_ip(self, id):
-        result = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mn._scale_.b24f.fd25.ss0").read()
+        result = os.popen("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {}".format(id)).read()
+
         return result.replace("\n","")
 
 
