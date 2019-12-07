@@ -33,7 +33,7 @@ class decision_module():
         vnf_json_data["volume"] = "medium"
 
 
-        """
+        
         print(vnf_json_data["vnf_id"])
         print(self.vnfid_timestamps.keys())
         if not vnf_json_data["vnf_id"] in self.vnfid_timestamps.keys():
@@ -50,7 +50,7 @@ class decision_module():
         else:
             print("discarting message...")
         #rl_module.train(data)
-        """
+        
         #message = await self.scale_decision("json")
         await self.send_message(vnf_json_data)
     
