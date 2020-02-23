@@ -10,6 +10,7 @@ class decision_module():
     def __init__(self):
         self.vnfid_timestamps = {}
         #rl_module = module()
+        self.keys = keys()
         self.scale_up_message = {
                     self.keys.flavor: "single", 
                     self.keys.volume: "small",
