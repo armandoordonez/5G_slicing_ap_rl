@@ -59,8 +59,6 @@ class decision_module():
 
     async def scale_decision(self, message):
         await asyncio.sleep(3) 
-        message["flavor"] = "double"
-        message["volume"] = "medium"
         return message
         
 #    async def scale_module(self, cpu, docker_id, ns_id, vnf_id, flavor_type, current_instance_number):
