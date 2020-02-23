@@ -6,18 +6,19 @@ import keys as keys
 #import rl_module
 #todo implement interface/abstract method
 class decision_module():
-    scale_up_message = {
-                    keys.flavor: "single", 
-                    keys.volume: "small",
-                    keys.ns_id: "3ef4dfc2-ac73-4171-938f-4fddcce3fec3",
-                    keys.vnf_id: "34ae306c-2fba-45ef-97ed-bbf77ca5528e",
-                    keys.vnf_index: "2",
-                    keys.sampling_time: 5,
-                    keys.scale_decision: "scale_down"
-                }
+
     def __init__(self):
         self.vnfid_timestamps = {}
         #rl_module = module()
+        self.scale_up_message = {
+                    self.keys.flavor: "single", 
+                    self.keys.volume: "small",
+                    self.keys.ns_id: "3ef4dfc2-ac73-4171-938f-4fddcce3fec3",
+                    self.keys.vnf_id: "34ae306c-2fba-45ef-97ed-bbf77ca5528e",
+                    self.keys.vnf_index: "2",
+                    self.keys.sampling_time: 5,
+                    self.keys.scale_decision: "scale_down"
+                }
         self.start()
         
     def start(self):
