@@ -98,7 +98,7 @@ class VnfScaleModule():
                 self._custom_print("key error: aliases")
         return docker_names
         
-    def get_docker_scale_ips(self, cadvisor_url):
+    def _get_docker_scale_ips(self, cadvisor_url):
         print("")
         docker_ids = self._get_docker_ids(cadvisor_url)
         self._custom_print(docker_ids)
