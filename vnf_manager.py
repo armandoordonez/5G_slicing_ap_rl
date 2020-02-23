@@ -186,8 +186,12 @@ class VnfManager(Observer):
         vnf_id = message[self.keys.vnf_id]
         vnf_index = message[self.keys.vnf_index]
         sampling_time =  message[self.keys.sampling_time]
-        self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id)
-        self.vnf_scale_module.scale_up_dockers(vnf_id, ns_id, volume, flavor)
+        scale_decision = message[self.keys.scale_decision]
+        if scale_decision == "scale_up":
+            self.vnf_scale_module.scale_up_dockers(self.cadvisor_url, vnf_id, ns_id, volume, flavor)
+        else:
+            self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id, volume, flavor)
+
         #supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
         #supervisor.attach(self)
         #return supervisor
@@ -223,7 +227,7 @@ class VnfManager(Observer):
         for vnf in vnf_list:
             for ip in self.get_ips_from(vnf):
                 ip_list.append(ip)
-        ip_list.extend(self.vnf_scale_module.get_docker_scale_ips(self.cadvisor_url))
+        ip_list.extend(self.vnf_scale_module._get_docker_scale_ips(self.cadvisor_url))
         self.custom_print(0, "debbugging.. ips {}".format(ip_list))
         self.init_server_in_all_instances()
         self.add_ips_to_load_balancer(ip_list)
