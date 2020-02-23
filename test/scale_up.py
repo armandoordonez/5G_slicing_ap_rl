@@ -18,7 +18,7 @@ class decision_module():
                     self.keys.vnf_id: "34ae306c-2fba-45ef-97ed-bbf77ca5528e",
                     self.keys.vnf_index: "2",
                     self.keys.sampling_time: 5,
-                    self.keys.scale_decision: "scale_down"
+                    self.keys.scale_decision: "scale_up"
                 }
         self.start()
         

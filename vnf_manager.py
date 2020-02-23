@@ -91,11 +91,13 @@ class VnfManager(Observer):
             self.keys.ns_id: message[self.keys.ns_id],
             self.keys.vnf_id: message[self.keys.vnf_id],
             self.keys.vnf_index: message[self.keys.vnf_index],
-            self.keys.sampling_time: message[self.keys.sampling_time],
+            self.keys.sampling_time: message[self.keys.sampling_time]
+            }
+        """
             self.keys.cpu_load: message[self.keys.cpu_load],
             self.keys.rx_usage: message[self.keys.rx_usage],
             self.keys.tx_usage: message[self.keys.tx_usage],   
-            }
+        """
         await self.docker_process(message)
         self.update_ips_lb()
         pending = asyncio.Task.all_tasks()
