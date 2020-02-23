@@ -91,7 +91,8 @@ class VnfManager(Observer):
             self.keys.ns_id: message[self.keys.ns_id],
             self.keys.vnf_id: message[self.keys.vnf_id],
             self.keys.vnf_index: message[self.keys.vnf_index],
-            self.keys.sampling_time: message[self.keys.sampling_time]
+            self.keys.sampling_time: message[self.keys.sampling_time],
+            self.keys.scale_decision: message[self.keys.scale_decision]
             }
         """
             self.keys.cpu_load: message[self.keys.cpu_load],
