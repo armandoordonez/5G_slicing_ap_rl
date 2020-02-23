@@ -10,3 +10,4 @@ class Keys():
     tx_usage = "tx_usage"
     docker_id = "docker_id"
     docker_name = "docker_name"
+    scale_decision = "scale_decision"
