@@ -60,6 +60,8 @@ class decision_module():
 
     async def scale_decision(self, message):
         await asyncio.sleep(3) 
+        message["scale_decision"] = "scale_up" # message["scale_decision"] = "scale_down"
+        #Si tiene el archivo Keys importado => message[self.keys.scale_decision]  = "scale_up"
         return message
         
 #    async def scale_module(self, cpu, docker_id, ns_id, vnf_id, flavor_type, current_instance_number):

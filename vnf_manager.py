@@ -16,6 +16,9 @@ from utils.colors import bcolors
 
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO Cancel event loop.
+#TODO test feature scale up / scale down.
+#TODO re factor code to acomplish CLEAN CODE
+#TODO implements unit tests
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
         self.TAG = "VnfManager"
