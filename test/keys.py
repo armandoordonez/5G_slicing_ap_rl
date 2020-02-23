@@ -1,0 +1,13 @@
+class Keys():
+    flavor = "flavor"
+    volume = "volume"
+    ns_id = "ns_id"
+    vnf_id = "vnf_id"
+    vnf_index = "vnf_index"
+    sampling_time = "sampling_time"
+    cpu_load = "cpu_load"
+    rx_usage = "rx_usage"
+    tx_usage = "tx_usage"
+    docker_id = "docker_id"
+    docker_name = "docker_name"
+    scale_decision = "scale_decision"
