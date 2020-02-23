@@ -62,6 +62,7 @@ class VnfManager(Observer):
                     self.keys.vnf_id: vnf_id,
                     self.keys.vnf_index: vnf_index,
                     self.keys.sampling_time: 5,
+                    self.keys.scale_decision: "scale_down"
                 }
                 #Print(for debug...)
                 await self.docker_process(message)
