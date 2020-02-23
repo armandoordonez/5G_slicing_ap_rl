@@ -4,6 +4,7 @@ import json
 import datetime
 #import rl_module
 #todo implement interface/abstract method
+#todo clean previous containers....
 class decision_module():
     def __init__(self):
         self.vnfid_timestamps = {}
