@@ -19,7 +19,7 @@ Execute vnf_manager_cleaned.py --dst_ip osm_ip --sdm_ip  reinforcement_learning_
 
 
 # Clone into another virtual machine from another account.
-
+ - Pull automate
  - After get all GCloud permisions execute: gcloud compute disks create vm-prod-disk --source-snapshot \
  https://www.googleapis.com/compute/v1/projects/<source-\
  project>/global/snapshots/<source-vm-snapshot> --project target-project
