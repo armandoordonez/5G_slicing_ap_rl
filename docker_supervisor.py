@@ -57,7 +57,8 @@ class DockerSupervisor(CpuSubject):
                     await asyncio.sleep(self.docker_instance.sampling_time)
                     self.cpu_load, self.rx_usage, self.tx_usage = self.get_current_usage_stats()
                     self.custom_print( "cpu load:{}% tx_usage: {}, rx_usage: {} name:{}".format(self.cpu_load, self.tx_usage, self.rx_usage, self.docker_instance.docker_name),1)
-                    if self.cpu_load > 0.3:
+                    if self.cpu_load > 0.1:
+                        print("10% overpasssed ..........")
                         await self.notify()
         except asyncio.CancelledError as e:
             self.custom_print("Task cancelled!")

@@ -13,6 +13,9 @@ from vnf_scale_order_module import VnfScaleModule
 from docker_supervisor import DockerSupervisor
 import keys as keys
 from utils.colors import bcolors 
+import datetime
+
+
 
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO Cancel event loop.
@@ -21,6 +24,7 @@ from utils.colors import bcolors
 #TODO implements unit tests
 class VnfManager(Observer):
     def __init__(self, base_url, sdm_ip, sdm_port):
+        self.monitoringtime  = datetime.datetime.now()
         self.TAG = "VnfManager"
         self.load_balancer_docker_id = "haproxy" # it's the docker name of the load balancer 
         self.haproxy_cfg_name = "haproxy.cfg" #its the configuration filename
@@ -85,9 +89,7 @@ class VnfManager(Observer):
     async def server_function(self, websockets, path):
         message = await websockets.recv()
         message = json.loads(message)
-        self.custom_print("message from sdm: {}".format(message),1)
-        self.custom_print("loop stopped",1)
-        self.custom_print("generating new dockers..",1)
+        self.custom_print("message receved from sdm: {}".format(message),1)
         message = {
             self.keys.flavor: message[self.keys.flavor], 
             self.keys.volume: message[self.keys.volume],
@@ -102,10 +104,16 @@ class VnfManager(Observer):
             self.keys.rx_usage: message[self.keys.rx_usage],
             self.keys.tx_usage: message[self.keys.tx_usage],   
         """
-        await self.docker_process(message)
-        self.update_ips_lb()
-        pending = asyncio.Task.all_tasks()
-        self.custom_print("current pending tasks:{}".format(len(pending)),1)
+
+        scale_rta = message[self.keys.scale_decision]
+        if scale_rta == "no_scale":
+            print("No debo hacer nada")
+
+        else:
+            await self.docker_process(message)
+            self.update_ips_lb()
+            pending = asyncio.Task.all_tasks()
+            self.custom_print("current pending tasks:{}".format(len(pending)),1)
 
     async def docker_process(self, message):
         flavor = message[self.keys.flavor]
@@ -196,9 +204,13 @@ class VnfManager(Observer):
         scale_decision = message[self.keys.scale_decision]
         if scale_decision == "scale_up":
             self.vnf_scale_module.scale_up_dockers(self.cadvisor_url, vnf_id, ns_id, volume, flavor)
-        else:
+        elif scale_decision == "scale_down":
             self.vnf_scale_module.scale_down_dockers(self.cadvisor_url, vnf_id, ns_id, volume, flavor)
+        else:
+            print ("NO DEBO HACER NADA ZZZZZZZZZZZ")
+              
 
+		
         #supervisor = DockerSupervisor(self.cadvisor_url, ns_id, vnf_id, vnf_index, sampling_time, volume, flavor)
         #supervisor.attach(self)
         #return supervisor
@@ -293,12 +305,18 @@ class VnfManager(Observer):
             self.keys.tx_usage: subject.tx_usage,
         }     
         print("sending message: {}".format(message))
-        await self.send_alert_to_sdm(json.dumps(message))
+
+
+        if((datetime.datetime.now() - self.monitoringtime).total_seconds() > 60):
+            print ("Llego aviso, se enviara mensaje porque  ya paso un minuto")
+            self.monitoringtime = datetime.datetime.now()
+            await self.send_alert_to_sdm(json.dumps(message))
+        else:
+            print("Llego aviso pero todavia no pasa un minuto....")
         
         #self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
         #    subject.docker_name, subject.cpu_load, subject.ns_name))
         
-
 
     def get_docker_name(self, ns_id, vnf_id, flavor, volume):
         identifier =  "{}{}{}".format(flavor[0], volume[0], 0)
