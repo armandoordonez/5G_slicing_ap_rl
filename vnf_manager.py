@@ -71,7 +71,6 @@ class VnfManager(Observer):
                     self.keys.sampling_time: 5,
                     self.keys.scale_decision: "scale_down"
                 }
-                Print(for debug de git.................................)
                 await self.docker_process(message)
                 await asyncio.sleep(10)
                 self.vnf_message[vnf_id] = message 
