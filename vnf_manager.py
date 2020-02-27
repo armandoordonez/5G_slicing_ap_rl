@@ -307,12 +307,12 @@ class VnfManager(Observer):
         print("sending message: {}".format(message))
 
 
-        if((datetime.datetime.now() - self.monitoringtime).total_seconds() > 60):
-            print ("Llego aviso, se enviara mensaje porque  ya paso un minuto")
+        if((datetime.datetime.now() - self.monitoringtime).total_seconds() > 50):
+            print ("An alert was risen, it will be sent as 50 sec has been elapsed")
             self.monitoringtime = datetime.datetime.now()
             await self.send_alert_to_sdm(json.dumps(message))
         else:
-            print("Llego aviso pero todavia no pasa un minuto....")
+            print("An alert was risen, it will NOT sent as 50 sec has NOT been elapsed  ....")
         
         #self.print(self.TAG,"message sended to the sdm from docker_name: {}, cpu load: {}, ns_name: {}".format(
         #    subject.docker_name, subject.cpu_load, subject.ns_name))
