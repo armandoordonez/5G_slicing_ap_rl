@@ -16,7 +16,7 @@ from utils.colors import bcolors
 import datetime
 
 
-
+#vnf_manager
 #current status: fixing the haproxy cfg file, in order to all the instances keep getting traffic despite the scale decision
 #TODO Cancel event loop.
 #TODO test feature scale up / scale down.
