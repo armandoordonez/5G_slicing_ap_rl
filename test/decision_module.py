@@ -41,7 +41,7 @@ class decision_module():
             await self.send_message(message)    
     
         elif(((datetime.datetime.now() - self.vnfid_timestamps[vnf_json_data["vnf_id"]]).total_seconds() / 60.0) > 1): 
-            print("1 minute already pass..... sending new decision on scaling....")
+            print("60 sec already pass..... sending new decision on scaling....")
             message = await self.scale_decision(vnf_json_data)
             await self.send_message(message)
             self.vnfid_timestamps[vnf_json_data["vnf_id"]] = datetime.datetime.now()   
