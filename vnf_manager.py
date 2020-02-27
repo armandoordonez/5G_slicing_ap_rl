@@ -89,7 +89,7 @@ class VnfManager(Observer):
     async def server_function(self, websockets, path):
         message = await websockets.recv()
         message = json.loads(message)
-        self.custom_print("message receved from sdm: {}".format(message),1)
+        self.custom_print("message received from sdm: {}".format(message),1)
         message = {
             self.keys.flavor: message[self.keys.flavor], 
             self.keys.volume: message[self.keys.volume],
@@ -234,7 +234,7 @@ class VnfManager(Observer):
                     only_ips.append(ip)
         return only_ips # returning a list of ips from a given vnf
     #todo function to send to the client to update the ips of the vnfs
-    # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
+    # vnf_1 : [0:ip1,1:ip2....,(n-1):ipn]
     
     #TODO get ips from the dockers made
     def update_ips_lb(self): #update ips with the new ones at the load balancer
