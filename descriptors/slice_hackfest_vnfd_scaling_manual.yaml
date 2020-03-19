@@ -1,0 +1,49 @@
+vnfd-catalog:
+    vnfd:
+    -   connection-point:
+        -   name: eth0
+            type: VPORT
+        -   name: eth1
+            type: VPORT
+        description: Simple VNF example with a ubuntu 16.04 and 2 interfaces (mgmt
+            and data)
+        id: slice_hackfest_vnfd
+        logo: osm_2x.png
+        mgmt-interface:
+            cp: eth0
+        name: slice_hackfest_vnfd
+        scaling-group-descriptor:
+        -   max-instance-count: 2
+            name: scale_cirros
+            vdu:
+            -   count: 2
+                vdu-id-ref: slice_hackfest_vnfd-VM
+        short-name: slice_hackfest_vnfd
+        vdu:
+        -   count: 1
+            description: slice_hackfest_vnfd-VM
+            id: slice_hackfest_vnfd-VM
+            image: ubuntu:trusty
+            interface:
+            -   external-connection-point-ref: eth0
+                name: eth0
+                type: EXTERNAL
+                virtual-interface:
+                    bandwidth: '0'
+                    type: VIRTIO
+                    vpci: 0000:00:0a.0
+            -   external-connection-point-ref: eth1
+                name: eth1
+                type: EXTERNAL
+                virtual-interface:
+                    bandwidth: '0'
+                    type: VIRTIO
+                    vpci: 0000:00:0a.0
+            name: slice_hackfest_vnfd-VM
+            vm-flavor:
+                memory-mb: 1024
+                storage-gb: 10
+                vcpu-count: 1
+        vendor: OSM
+        version: '1.0'
+

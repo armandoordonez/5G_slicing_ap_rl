@@ -1,0 +1,47 @@
+nsd-catalog:
+    nsd:
+    -   connection-point:
+        -   name: nsd_cp_mgmt
+            vld-id-ref: nsd_vnfd_vld_mgmt
+        -   name: nsd_cp_data
+            vld-id-ref: nsd_vnfd_vld_data
+        constituent-vnfd:
+        -   member-vnf-index: 1
+            vnfd-id-ref: video_server
+        -   member-vnf-index: 2
+            vnfd-id-ref: video_server
+        description: NetServiceDescriptor with 2 vnfs and 2 vld (mgmt and data networks)
+        id: slice_video_nsd
+        logo: osm_2x.png
+        name: slice_video_nsd
+        short-name: slice_video_ns
+        vendor: OSM
+        version: '1.0'
+        vld:
+        -   id: nsd_vnfd_vld_mgmt
+            mgmt-network: 'true'
+            name: nsd_vnfd_vld_mgmt
+            short-name: nsd_vnfd_vld_mgmt
+            type: ELAN
+            vim-network-name: default
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: 1
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: video_server
+            -   member-vnf-index-ref: 2
+                vnfd-connection-point-ref: eth0
+                vnfd-id-ref: video_server
+        -   id: nsd_vnfd_vld_data
+            mgmt-network: 'false'
+            name: nsd_vnfd_vld_data
+            short-name: nsd_vnfd_vld_data
+            type: ELAN
+            vnfd-connection-point-ref:
+            -   member-vnf-index-ref: 1
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: video_server
+            -   member-vnf-index-ref: 2
+                vnfd-connection-point-ref: eth1
+                vnfd-id-ref: video_server
+
+

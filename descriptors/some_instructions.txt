@@ -1,0 +1,28 @@
+--*installation*----
+wget https://osm-download.etsi.org/ftp/osm-5.0-five/install_osm.sh
+chmod +x install_osm.sh
+./install_osm.sh --vimemu
+
+
+-----
+
+sudo apt-get update
+sudo apt-get install iperf
+
+
+
+export VIMEMU_HOSTNAME=$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vim-emu)
+osm vim-create --name emu-vim7 --user username --password password --auth_url http://$VIMEMU_HOSTNAME:6001/v2.0 --tenant tenantName --account_type openstack
+osm nsi-create --nsi_name my_first_slice --nst_name slice_hackfest_nst --vim_account emu-vim1 
+
+wget https://osm-download.etsi.org/ftp/osm-5.0-five/install_osm.sh
+chmod +x install_osm.sh
+./install_osm.sh --vimemu -t v5.0.5 
+
+
+--- scaling ---
+
+/nslcm/v1//vnf_instances/
+curl -X GET   https://localhost:9999/osm/nslcm/v1//vnf_instances/c4e9a352-502d-47c8-b055-1e8ba2d6eb99   -H 'Authorization: Bearer kEmKDSzngiKo6WMnUdFdxAYNWcdTcJ4y'   -H 'Content-Type: application/json'   -H 'Postman-Token: 7057c832-ab3a-4853-8d0c-b59332fd9ac6'   -H 'cache-control: no-cache' 
+curl -X POST   https://localhost:9999/osm/nslcm/v1/ns_instances/ebcd525c-7566-4ed2-b9ae-2e5409d1886b/scale   -H 'Authorization: Bearer kEmKDSzngiKo6WMnUdFdxAYNWcdTcJ4y'   -H 'Content-Type: application/json'   -H 'Postman-Token: 7057c832-ab3a-4853-8d0c-b59332fd9ac6'   -H 'cache-control: no-cache'   -d '{"scaleType": "SCALE_VNF","scaleVnfData":{"scaleVnfType": "SCALE_OUT","scaleByStepData":{"scaling-group-descriptor": "scale_cirros2","member-vnf-index": "1"}}}' -k
+curl -X POST https://localhost:9999/osm/admin/v1/tokens -H 'Postman-Token: 70cf1d12-da0e-440f-9c0a-35f9f7f66ddc' -H 'cache-control: no-cache' -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' -F username=admin -F password=admin -k

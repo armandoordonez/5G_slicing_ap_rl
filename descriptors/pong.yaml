@@ -1,0 +1,30 @@
+vnfd-catalog:
+    vnfd:
+    -   connection-point:
+        -   name: pong/cp0
+            type: VPORT
+        description: Empty example container VNF
+        id: pong
+        mgmt-interface:
+            cp: pong/cp0
+        name: pong
+        short-name: pong
+        vdu:
+        -   count: '1'
+            description: Ubuntu Trusty default Docker container
+            id: ubuntu
+            image: ubuntu:trusty
+            interface:
+            -   external-connection-point-ref: pong/cp0
+                name: pong0
+                position: 0
+                type: EXTERNAL
+                virtual-interface:
+                    type: VIRTIO
+            name: ubuntu
+            vm-flavor:
+                memory-mb: 512
+                storage-gb: 10
+                vcpu-count: 1
+        vendor: Paderborn University
+        version: '1.1'
